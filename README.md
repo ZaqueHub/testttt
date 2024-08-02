@@ -254,8 +254,8 @@ local function ReadKey()
 end
 
 local URL = 'https://tsuo-script.xyz/'
-local publicKEY1 = 3521
-local publicKEY2 = 16748
+local publicKEY1 = tloc
+local publicKEY2 = tlocc
 local base64_chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
 
 local REQ = (syn and syn.request) or (identifyexecutor() == 'Fluxus' and request) or http_request or http.request or request
@@ -9561,4 +9561,3 @@ object.GetKey.MouseButton1Click:Connect(function()
     object.TextBox.Text = link
     setclipboard(link)
 end)
-
