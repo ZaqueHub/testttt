@@ -4853,49 +4853,164 @@ end)
         _G.BringMob = Value
     end)
     Options.ToggleBringMob:SetValue(true)
-    spawn(function()
-        while wait() do
-            pcall(function()
-                for i,v in pairs(game:GetService("Workspace").Enemies:GetChildren()) do
-                    if _G.BringMob and bringmob then
-                        if v.Name == MonFarm and v:FindFirstChild("Humanoid") and v.Humanoid.Health > 0 then
-                            if v.Name == "Factory Staff" then
-                                if (v.HumanoidRootPart.Position - FarmPos.Position).Magnitude <= 500 then
-                                    v.Head.CanCollide = false
-                                    v.HumanoidRootPart.CanCollide = false
-                                    v.HumanoidRootPart.Size = Vector3.new(60, 60, 60)
-                                    v.HumanoidRootPart.CFrame = FarmPos
-                                    if v.Humanoid:FindFirstChild("Animator") then
-                                        v.Humanoid.Animator:Destroy()
+
+         
+--loadstring(game:HttpGet("https://raw.githubusercontent.com/memaybeohub/Function-Scripts/main/BringMobLoader.lua"))()
+        --[[
+        task.spawn(
+            function()
+                while task.wait() do
+                    StartBringMob = false
+                end
+            end
+        )
+        ]]
+        function BringMob(BringMobChoosen,V5)
+            if not BringMobChoosen then
+                return
+            end
+            sethiddenproperty(game.Players.LocalPlayer, "SimulationRadius", math.huge)
+            if not BringMobChoosen:FindFirstChild("Bringed") then 
+                Bringed = Instance.new("IntValue",BringMobChoosen)
+                Bringed.Name = "Bringed" 
+            else
+                return
+            end
+            V6 = BringMobChoosen.HumanoidRootPart
+            if V5 then 
+                V6 = V5 
+            end
+            if BringMobChoosen then
+                for i, v in pairs(game.Workspace.Enemies:GetChildren()) do
+                    if
+                        v.Name == BringMobChoosen.Name and
+                            (V6.Position - v.HumanoidRootPart.Position).Magnitude < 340 and
+                            (chodonandngu(v.HumanoidRootPart) or isnetworkowner(v.HumanoidRootPart)) and
+                            v.Humanoid.MaxHealth < 100000
+                     then
+                        spawn(
+                            function()
+                                TweenObject(V6,v.HumanoidRootPart,1000)
+                                spawn(
+                                    function()
+                                        pcall(
+                                            function() 
+                                                if not v.HumanoidRootPart:FindFirstChild("lockmmb") then
+                                                    local lock = Instance.new("BodyVelocity")
+                                                    lock.Parent = v.HumanoidRootPart
+                                                    lock.Name = "lockmmb"
+                                                    lock.MaxForce = Vector3.new(100000, 100000, 100000)
+                                                    lock.Velocity = Vector3.new(0, 0, 0)
+                                                end
+                                                if v and v:FindFirstChild("Humanoid") and v.Humanoid.Health > 0 then
+                                                    for i, sk in pairs(v:GetDescendants()) do
+                                                        if sk:IsA("BasePart") or sk:IsA("Part") then
+                                                            sk.CanCollide = false
+                                                        end
+                                                    end
+                                                    v.Humanoid.WalkSpeed = 0
+                                                    v.Humanoid.JumpPower = 0
+                                                    if v.Humanoid:FindFirstChild("Animator") then
+                                                        v.Humanoid.Animator:Destroy()
+                                                    end
+                                                end
+                                            end
+                                        )
                                     end
-                                    sethiddenproperty(game.Players.LocalPlayer, "SimulationRadius", math.huge)
-                                end
-                            elseif v.Name == MonFarm then
-                                if (v.HumanoidRootPart.Position - FarmPos.Position).Magnitude <= 337.5 then
-                                    v.HumanoidRootPart.CFrame = FarmPos
-                                    v.HumanoidRootPart.Size = Vector3.new(60,60,60)
-                                    v.HumanoidRootPart.Transparency = 1
-                                    v.Humanoid.JumpPower = 0
-                                    v.Humanoid.WalkSpeed = 0
-                                    if v.Humanoid:FindFirstChild("Animator") then
-                                        v.Humanoid.Animator:Destroy()
-                                    end
-                                    v.HumanoidRootPart.CanCollide = false
-                                    v.Head.CanCollide = false
-                                    v.Humanoid:ChangeState(11)
-                                    v.Humanoid:ChangeState(14)
-                                    sethiddenproperty(game.Players.LocalPlayer, "SimulationRadius", math.huge)
+                                )
+                                 
+                            end
+                        )
+                    end
+                end
+            end
+        end
+        --[[
+        task.spawn(
+                function()
+                    while task.wait() do
+                        if StartBringMob then 
+                            for i,v in pairs(game.workspace.Enemies:GetChildren()) do 
+                                if
+                                    StartBringMob and v:FindFirstChild("lockmmb") and v:FindFirstChild("Humanoid") and v:FindFirstChild("HumanoidRootPart") and
+                                        v.Humanoid.Health > 0 and
+                                        not string.find(v.Name, "Boss") and
+                                        not table.find(Elites, v.Name)
+                                then
+                                        if not v:FindFirstChild("TickCheck") then
+                                            TickCheck = Instance.new("IntValue")
+                                            TickCheck.Name = "TickCheck"
+                                            TickCheck.Parent = v
+                                            TickCheck.Value = tick()
+                                        elseif
+                                            v:FindFirstChild("TickCheck") and
+                                                ((tick() - v.TickCheck.Value >= 90 and v.Humanoid.Health == v.Humanoid.MaxHealth) or
+                                                    (tick() - v.TickCheck.Value >= 90))
+                                        then
+                                            v.Humanoid.Health = 0
+                                        end
+                                    task.wait(.5)
+                                else
+                                    break
                                 end
                             end
                         end
-                                end
-                            end
-                        end)
+                    end
                 end
-            end)
+            )
+        ]]
+        function SizePart(v, CFRmg, namemob1)
+            if v:FindFirstChild("lockmmb") then
+                return
+            end 
+            namemob1 = RemoveLevelTitle(namemob1)
+            v.Name = RemoveLevelTitle(v.Name)
+            if namemob1 and v.Name ~= namemob1 then
+                return
+            end
+            if not v:FindFirstChild("HumanoidRootPart") then
+                return
+            end
+            if not v.HumanoidRootPart:FindFirstChild("lockmmb") then
+                local lock = Instance.new("BodyVelocity")
+                lock.Parent = v.HumanoidRootPart
+                lock.Name = "lockmmb"
+                lock.MaxForce = Vector3.new(100000, 100000, 100000)
+                lock.Velocity = Vector3.new(0, 0, 0)
+                if not CFRmg then
+                    return
+                end
+                if IsBoss(v.Name) then
+                    return
+                end
+                if isnetworkowner(v.HumanoidRootPart) and v.Humanoid.MaxHealth <= 500000 and not IsBoss(v.Name) then  
+                    spawn(
+                        function()
+                            pcall(
+                                function()
+                                    if v and v:FindFirstChild("Humanoid") and v.Humanoid.Health > 0 then
+                                        for i, sk in pairs(v:GetDescendants()) do
+                                            if sk:IsA("BasePart") or sk:IsA("Part") then
+                                                sk.CanCollide = false
+                                            end
+                                        end
+                                        v.Humanoid.WalkSpeed = 0
+                                        v.Humanoid.JumpPower = 0
+                                        if v.Humanoid:FindFirstChild("Animator") then
+                                            v.Humanoid.Animator:Destroy()
+                                        end
+                                    end
+                                end
+                            )
+                        end
+                    )
+                else
+                    return 
+                end
+            end
+        end 
 
-         
-    local ToggleBypassTP = Tabs.Setting:AddToggle("ToggleBypassTP", {Title = "Enabled Bypass Tp",Description = "", Default = false })
+      local ToggleBypassTP = Tabs.Setting:AddToggle("ToggleBypassTP", {Title = "Enabled Bypass Tp",Description = "", Default = false })
     ToggleBypassTP:OnChanged(function(Value)
         BypassTP = Value
     end)
@@ -7951,3 +8066,5 @@ Fluent:Notify({
     Durtion = 3
 })
 warn("Cảm ơn bạn đã sử dụng hack")
+--fast attack
+loadstring(game:HttpGet("https://raw.githubusercontent.com/memaybeohub/Function-Scripts/main/FastAttackLoader.lua"))()
