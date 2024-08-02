@@ -9562,3 +9562,4 @@ object.GetKey.MouseButton1Click:Connect(function()
     setclipboard(link)
 end)
 
+--nog
