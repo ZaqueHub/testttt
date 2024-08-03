@@ -182,5 +182,3 @@ function Library:Window()
     Main.BorderSizePixel = 0
     Main.Position = UDim2.new(0.287499994, 0, 0.0700000003, 0)
     Main.Size = UDim2.new(0, 344, 0, 457)
-
-
