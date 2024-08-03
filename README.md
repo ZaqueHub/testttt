@@ -182,3 +182,16 @@ function Library:Window()
     Main.BorderSizePixel = 0
     Main.Position = UDim2.new(0.287499994, 0, 0.0700000003, 0)
     Main.Size = UDim2.new(0, 344, 0, 457)
+
+    -- Bạn có thể thêm các thành phần UI khác vào đây
+
+    -- Thêm cửa sổ cuối file
+    local WindowFrame = Instance.new("Frame")
+    WindowFrame.Parent = MainFrame
+    WindowFrame.BackgroundColor3 = Library.Theme.LightContrast -- Màu đen
+    WindowFrame.BorderSizePixel = 0
+    WindowFrame.Position = UDim2.new(0.1, 0, 0.9, 0) -- Vị trí phù hợp cuối giao diện
+    WindowFrame.Size = UDim2.new(0.8, 0, 0.1, 0)
+
+    local WindowLabel = Instance.new("TextLabel")
+    WindowLabel
