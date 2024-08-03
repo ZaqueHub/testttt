@@ -31,28 +31,28 @@ local Window = Fluent:CreateWindow({
     TabWidth = 170, -- Slightly wider tabs
     Size = UDim2.fromOffset(550, 350), -- Adjusted size
     Acrylic = true,
-    Theme = "Aqua", -- Changed theme to an aqua look
+    Theme = "Black", -- Changed theme to an aqua look
     MinimizeKey = Enum.KeyCode.End
 })
 
 local Tabs = {
-    profile = Window:AddTab({ Title = "User Info", Icon = "user" }), -- Renamed and updated icon
-    Main = Window:AddTab({ Title = "Main Features", Icon = "home" }), -- Renamed and updated icon
-    Sea = Window:AddTab({ Title = "Sea Events", Icon = "anchor" }), -- Renamed and updated icon
-    Setting = Window:AddTab({ Title = "Preferences", Icon = "settings" }), -- Renamed
-    Status = Window:AddTab({ Title = "Server Status", Icon = "activity" }),
-    Stats = Window:AddTab({ Title = "Player Stats", Icon = "bar-chart" }), -- Renamed and updated icon
-    Player = Window:AddTab({ Title = "Player vs Player", Icon = "swords" }), -- Renamed and updated icon
-    Teleport = Window:AddTab({ Title = "Teleportation", Icon = "map-pin" }), -- Renamed and updated icon
-    Fruit = Window:AddTab({ Title = "Fruit Finder", Icon = "apple" }), -- Renamed
-    Raid = Window:AddTab({ Title = "Dungeon Raids", Icon = "dungeon" }), -- Renamed and updated icon
-    Race = Window:AddTab({ Title = "Race Trials", Icon = "chevrons-right" }),
-    Shop = Window:AddTab({ Title = "In-Game Store", Icon = "shopping-cart" }), -- Renamed
-    Misc = Window:AddTab({ Title = "Miscellaneous", Icon = "list" }), -- Updated icon
-    Hop = Window:AddTab({ Title = "Server Hopping", Icon = "wifi" }) -- Renamed
+    profile = Window:AddTab({ Title = "Information", Icon = "scan-face" }),
+    Main = Window:AddTab({ Title = "Main Farm", Icon = "home" }),
+    Sea = Window:AddTab({ Title = "Sea Event", Icon = "anchor" }),
+    Setting = Window:AddTab({ Title = "Settings", Icon = "settings" }),
+    Status = Window:AddTab({ Title = "Server Stats", Icon = "activity" }),
+    Stats = Window:AddTab({ Title = "Stats", Icon = "plus-circle" }),
+    Player = Window:AddTab({ Title = "Player pvp", Icon = "baby" }),
+    Teleport = Window:AddTab({ Title = "Teleport", Icon = "palmtree" }),
+    Fruit = Window:AddTab({ Title = "Fruit Blox ESP", Icon = "apple" }),
+    Raid = Window:AddTab({ Title = "Dungeon", Icon = "swords" }),
+    Race = Window:AddTab({ Title = "Race Trial V4", Icon = "chevrons-right" }),
+    Shop = Window:AddTab({ Title = "Shop", Icon = "shopping-cart" }),
+	Misc = Window:AddTab({ Title = "Miscellaneous", Icon = "list-plus" }),
+    Hop = Window:AddTab({ Title = "Hop Server", Icon = "wifi" }),
 }
-
 local Options = Fluent.Options
+do
 --------------------------------------------------------------------------------------------------------------------------------------------
 --// Place Id Check
 local id = game.PlaceId
@@ -7946,7 +7946,7 @@ end)
 end
 ----------------------------------------------------------------------------------------------------------------------------------------------
 Fluent:Notify({
-    Title = "Tloc",
+    Title = "ZINER HUB",
     Content = "Helllo you",
     Durtion = 3
 })
