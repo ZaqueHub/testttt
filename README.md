@@ -1,18 +1,19 @@
 local player = game.Players.LocalPlayer
-local gui = player:WaitForChild("PlayerGui")
+local gui = player:WaitForChild("PlayerGui") -- Get the player's PlayerGui
 
 local screenGui = Instance.new("ScreenGui")
-screenGui.Name = "ShinyHubGui" -- Updated name
+screenGui.Name = "MyButtonGui"
 screenGui.Parent = gui
 
 local button = Instance.new("TextButton")
-button.Name = "ShinyButton"
+button.Name = "MyButton"
 button.Font = Enum.Font.GothamBold -- Changed font for a more modern look
 button.Size = UDim2.new(0, 120, 0, 60) -- Slightly larger button
 button.Position = UDim2.new(0, 15, 0.5, -30) -- Adjusted position
 button.BackgroundColor3 = Color3.fromRGB(85, 170, 255) -- Changed background color to a shiny blue
 button.TextColor3 = Color3.fromRGB(255, 255, 255) -- White text color
-button.Text = "Shiny Action" -- Updated button text
+
+button.Text = "Stop Tween" -- Set button text
 button.Parent = screenGui
 
 local function onClick()
@@ -20,6 +21,7 @@ local function onClick()
 end
 
 button.MouseButton1Click:Connect(onClick)
+
 
 local Fluent = loadstring(game:HttpGet("https://raw.githubusercontent.com/Tienvn123tkvn/Test/main/ZINERHUB_Ui.lua"))()
 local SaveManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/Tienvn123tkvn/Test/main/ZierhubManager.lua"))()
