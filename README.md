@@ -136,29 +136,28 @@ for i, toggleItem in ipairs(toggleItems) do
         end
     end
     
-    toggleContainer.InputBegan:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 then
-            toggleStates[i] = not toggleStates[i]
-            updateToggleUI()
-            
-            -- Nếu toggle là "Auto Farm", thêm script auto jump
-            if toggleItem == "Auto Farm" then
-                local player = game.Players.LocalPlayer
-                local character = player.Character
-                if character then
-                    local humanoid = character:FindFirstChildOfClass("Humanoid")
-                    if humanoid then
-                        while toggleStates[i] do
-                            humanoid:ChangeState(Enum.HumanoidStateType.Physics)
-                            humanoid:Move(Vector3.new(0, 50, 0)) -- Thay đổi giá trị Vector3 theo nhu cầu
-                            wait(1) -- Thay đổi thời gian chờ theo nhu cầu
-                        end
+    toggleContainer.MouseButton1Click:Connect(function()
+        toggleStates[i] = not toggleStates[i]
+        updateToggleUI()
+        
+        -- Nếu toggle là "Auto Farm", thêm script auto jump
+        if toggleItem == "Auto Farm" then
+            local player = game.Players.LocalPlayer
+            local character = player.Character or player.CharacterAdded:Wait()
+            local humanoid = character:FindFirstChildOfClass("Humanoid")
+            if humanoid then
+                if toggleStates[i] then
+                    while toggleStates[i] do
+                        humanoid:ChangeState(Enum.HumanoidStateType.Physics)
+                        humanoid:Move(Vector3.new(0, 50, 0), true)  -- Nhảy liên tục
+                        wait(1)  -- Thay đổi thời gian nhảy nếu cần
                     end
                 end
             end
         end
     end)
     
+    updateToggleUI()
     table.insert(toggles, toggleContainer)
 end
 
@@ -190,10 +189,16 @@ for i, button in ipairs(buttons) do
     end)
 end
 
--- Chức năng bật/tắt UI
-toggleButton.MouseButton1Click:Connect(function()
-    mainFrame.Visible = not mainFrame.Visible
-end)
+-- Chức năng bật/tắt UI với hiệu ứng hoạt ảnh
+local function toggleMainFrameVisibility()
+    local targetVisibility = not mainFrame.Visible
+    local tweenInfo = TweenInfo.new(0.5, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
+    local tweenGoal = {Size = targetVisibility and UDim2.new(0, 500, 0, 350) or UDim2.new(0, 0, 0, 0)}
+    TweenService:Create(mainFrame, tweenInfo, tweenGoal):Play()
+    mainFrame.Visible = targetVisibility
+end
+
+toggleButton.MouseButton1Click:Connect(toggleMainFrameVisibility)
 
 -- Chức năng đóng UI
 closeButton.MouseButton1Click:Connect(function()
@@ -202,4 +207,4 @@ end)
 
 -- Mặc định hiển thị nội dung của tab 1 (Owner Info)
 showContent(1)
-print("new")
+print("moi")
