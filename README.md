@@ -7,10 +7,19 @@ local toggleButton = Instance.new("TextButton")
 toggleButton.Size = UDim2.new(0, 50, 0, 50)
 toggleButton.Position = UDim2.new(0, 10, 0, 10)
 toggleButton.BackgroundColor3 = Color3.fromRGB(255, 105, 180)
-toggleButton.Text = "☰"
+toggleButton.Text = ""
 toggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 toggleButton.TextScaled = true
 toggleButton.Parent = screenGui
+toggleButton.BorderSizePixel = 0
+toggleButton.AutoButtonColor = false
+
+local toggleIcon = Instance.new("ImageLabel")
+toggleIcon.Size = UDim2.new(0.8, 0, 0.8, 0)
+toggleIcon.Position = UDim2.new(0.1, 0, 0.1, 0)
+toggleIcon.BackgroundTransparency = 1
+toggleIcon.Image = "rbxassetid://3944680095"  -- ID của hình tròn
+toggleIcon.Parent = toggleButton
 
 -- Tạo Main Frame và ẩn nó ban đầu
 local mainFrame = Instance.new("Frame")
@@ -34,14 +43,12 @@ hubLabel.TextColor3 = Color3.fromRGB(255, 105, 180)
 hubLabel.TextScaled = true
 hubLabel.Parent = mainFrame
 
--- Thêm nút đóng UI vào góc trên cùng
-local closeButton = Instance.new("TextButton")
+-- Thay thế nút đóng UI bằng ImageButton với hình ảnh bình exp của Minecraft
+local closeButton = Instance.new("ImageButton")
 closeButton.Size = UDim2.new(0, 30, 0, 30)
 closeButton.Position = UDim2.new(1, -40, 0, 10)
-closeButton.BackgroundColor3 = Color3.fromRGB(255, 105, 180)
-closeButton.Text = "X"
-closeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-closeButton.TextScaled = true
+closeButton.BackgroundTransparency = 1
+closeButton.Image = "rbxassetid://(minecraft_exp_bottle_asset_id)" -- Thay thế bằng asset ID của bình exp Minecraft
 closeButton.Parent = mainFrame
 
 -- Tạo Sidebar cho menu bên trái
@@ -90,8 +97,8 @@ local toggleStates = {}
 
 for i, toggleItem in ipairs(toggleItems) do
     local toggleContainer = Instance.new("Frame")
-    toggleContainer.Size = UDim2.new(1, -20, 0, 40)
-    toggleContainer.Position = UDim2.new(0, 10, 0, (i-1) * 50)
+    toggleContainer.Size = UDim2.new(1, -20, 0, 30)  -- Toggle nhỏ hơn
+    toggleContainer.Position = UDim2.new(0, 10, 0, (i-1) * 40)
     toggleContainer.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
     toggleContainer.BorderSizePixel = 0
     toggleContainer.Parent = toggleHolder
@@ -106,8 +113,8 @@ for i, toggleItem in ipairs(toggleItems) do
     toggleLabel.Parent = toggleContainer
     
     local toggleSwitch = Instance.new("Frame")
-    toggleSwitch.Size = UDim2.new(0.2, 0, 0.6, 0)
-    toggleSwitch.Position = UDim2.new(0.75, 0, 0.2, 0)
+    toggleSwitch.Size = UDim2.new(0.15, 0, 0.6, 0)  -- Toggle nhỏ hơn
+    toggleSwitch.Position = UDim2.new(0.8, 0, 0.2, 0)
     toggleSwitch.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
     toggleSwitch.BorderSizePixel = 0
     toggleSwitch.Parent = toggleContainer
@@ -117,6 +124,9 @@ for i, toggleItem in ipairs(toggleItems) do
     toggleKnob.Position = UDim2.new(0, 0, 0, 0)
     toggleKnob.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
     toggleKnob.BorderSizePixel = 0
+    toggleKnob.AnchorPoint = Vector2.new(0.5, 0.5)
+    toggleKnob.SizeConstraint = Enum.SizeConstraint.RelativeYY
+    toggleKnob.Size = UDim2.new(0, toggleSwitch.Size.Y.Offset, 0, toggleSwitch.Size.Y.Offset)
     toggleKnob.Parent = toggleSwitch
     
     toggleStates[i] = false  -- Mặc định trạng thái của Toggle là OFF
@@ -127,34 +137,32 @@ for i, toggleItem in ipairs(toggleItems) do
             if toggleStates[i] then
                 toggleKnob:TweenPosition(UDim2.new(1, -toggleKnob.Size.X.Offset, 0, 0), "Out", "Sine", 0.2, true)
                 toggleSwitch.BackgroundColor3 = Color3.fromRGB(0, 255, 0)  -- Màu xanh lá khi bật
+                
+                -- Thêm chức năng Auto Jump cho Auto Farm
+                if toggleItem == "Auto Farm" then
+                    local player = game.Players.LocalPlayer
+                    player.Character.Humanoid.JumpPower = 100
+                    while toggleStates[i] do
+                        player.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
+                        wait(1)
+                    end
+                end
             else
                 toggleKnob:TweenPosition(UDim2.new(0, 0, 0, 0), "Out", "Sine", 0.2, true)
-                toggleSwitch.BackgroundColor3 = Color3.fromRGB(0, 0, 0)  -- Quay lại màu đen khi tắt
+                toggleSwitch.BackgroundColor3 = Color3.fromRGB(0, 0, 0)  -- Màu đen khi tắt
             end
         end
     end)
-    
-    table.insert(toggles, toggleContainer)
 end
 
--- Chức năng chuyển đổi tab (hiển thị nội dung cơ bản cho các tab khác)
-local contentText = Instance.new("TextLabel")
-contentText.Size = UDim2.new(1, 0, 1, 0)
-contentText.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
-contentText.TextColor3 = Color3.fromRGB(255, 255, 255)
-contentText.TextScaled = true
-contentText.Text = "Content for Tab"
-contentText.Visible = false  -- Ban đầu ẩn, chỉ hiển thị khi chọn tab khác ngoài tab 1
-contentText.Parent = contentFrame
-
+-- Chức năng chuyển đổi nội dung các tab
 local function showContent(index)
-    if index == 1 then
-        toggleHolder.Visible = true
-        contentText.Visible = false  -- Ẩn nội dung mặc định khi hiển thị các toggle
-    else
-        toggleHolder.Visible = false
-        contentText.Text = "Content for " .. menuItems[index]
-        contentText.Visible = true
+    for i, button in ipairs(buttons) do
+        if i == index then
+            button.BackgroundColor3 = Color3.fromRGB(255, 105, 180)  -- Đổi màu nút được chọn
+        else
+            button.BackgroundColor3 = Color3.fromRGB(0, 0, 0)  -- Màu mặc định cho các nút không được chọn
+        end
     end
 end
 
