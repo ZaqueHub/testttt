@@ -187,36 +187,6 @@ local ThemeManager = {} do
     end
 end
 
-function SaveManager:BuildConfigSection(Tabs)
-    local ConfigSection = Tabs.Main:AddRightGroupbox('Configuration')
-
-    ConfigSection:AddInput('SaveManager_ConfigName', { Text = 'Config name' })
-
-    ConfigSection:AddDropdown('SaveManager_ConfigList', { Text = 'Config list', Values = SaveManager:RefreshConfigList(), AllowNull = true })
-
-    ConfigSection:AddDivider()
-
-    ConfigSection:AddButton('Create config', function()
-        SaveManager:SaveConfig(Options.SaveManager_ConfigName.Value)
-
-        Options.SaveManager_ConfigList:SetValues(SaveManager:RefreshConfigList())
-        Options.SaveManager_ConfigList:SetValue(nil)
-    end):AddButton('Load config', function()
-        SaveManager:LoadConfig(Options.SaveManager_ConfigList.Value)
-    end)
-
-    ConfigSection:AddButton('Overwrite config', function()
-        SaveManager:SaveConfig(Options.SaveManager_ConfigList.Value)
-    end)
-
-    ConfigSection:AddButton('Autoload config', function()
-        SaveManager:SetIgnoreIndexes({ 'SaveManager_ConfigList' })
-        SaveManager:BuildConfigSection(Tabs)
-    end)
-
-    Options.SaveManager_ConfigList:SetValues(SaveManager:RefreshConfigList())
-end
-
 local Main = Window:CreateTab(6031154871, "Main")
 local Misc = Main:CreateTab(6031154871, "Misc Farm")
 local Stats = Main:CreateTab(6031154871, "Stats")
