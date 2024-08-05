@@ -6,12 +6,15 @@ screenGui.Name = "ShinyHubUI"
 screenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
 
 local toggleButton = Instance.new("TextButton")
-toggleButton.Size = UDim2.new(0, 50, 0, 50)
-toggleButton.Position = UDim2.new(0, 10, 0, 10)
+toggleButton.Size = UDim2.new(0, 60, 0, 60)  -- Kích thước lớn hơn để phù hợp với hình tròn
+toggleButton.Position = UDim2.new(0, 10, 0, 60)  -- Xích xuống dưới một chút
 toggleButton.BackgroundColor3 = Color3.fromRGB(255, 105, 180)
 toggleButton.Text = "☰"
 toggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 toggleButton.TextScaled = true
+toggleButton.BackgroundTransparency = 1
+toggleButton.BorderSizePixel = 0
+toggleButton.BorderRadius = UDim.new(0, 30)  -- Hình tròn
 toggleButton.Parent = screenGui
 
 -- Tạo Main Frame và ẩn nó ban đầu
@@ -44,6 +47,8 @@ closeButton.BackgroundColor3 = Color3.fromRGB(255, 105, 180)
 closeButton.Text = "X"
 closeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 closeButton.TextScaled = true
+closeButton.BackgroundTransparency = 1
+closeButton.BorderSizePixel = 0
 closeButton.Parent = mainFrame
 
 -- Tạo Sidebar cho menu bên trái
@@ -202,4 +207,4 @@ end)
 
 -- Mặc định hiển thị nội dung của tab 1 (Owner Info)
 showContent(1)
-print("nut an cam")
+--nog
