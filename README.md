@@ -1,219 +1,179 @@
-local httpService = game:GetService('HttpService')
-local ThemeManager = {} do
-    ThemeManager.Folder = 'LinoriaLibSettings'
-    -- if not isfolder(ThemeManager.Folder) then makefolder(ThemeManager.Folder) end
+-- Tạo ScreenGui và Toggle UI Button
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "ShinyHubUI"
+screenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
 
-    ThemeManager.Library = nil
-    ThemeManager.BuiltInThemes = {
-        ['Default']       = { 1, httpService:JSONDecode('{"FontColor":"ffffff","MainColor":"2d2d2d","AccentColor":"ff7043","BackgroundColor":"212121","OutlineColor":"37474f"}') },
-        ['BBot']          = { 2, httpService:JSONDecode('{"FontColor":"ffffff","MainColor":"3e3e3e","AccentColor":"00796b","BackgroundColor":"263238","OutlineColor":"1c1c1c"}') },
-        ['Fatality']      = { 3, httpService:JSONDecode('{"FontColor":"ffffff","MainColor":"1e3d59","AccentColor":"ffab40","BackgroundColor":"102027","OutlineColor":"4f5b62"}') },
-        ['Jester']        = { 4, httpService:JSONDecode('{"FontColor":"ffffff","MainColor":"37474f","AccentColor":"ffd54f","BackgroundColor":"263238","OutlineColor":"546e7a"}') },
-        ['Mint']          = { 5, httpService:JSONDecode('{"FontColor":"ffffff","MainColor":"4e342e","AccentColor":"8bc34a","BackgroundColor":"3e2723","OutlineColor":"5d4037"}') },
-        ['Tokyo Night']   = { 6, httpService:JSONDecode('{"FontColor":"ffffff","MainColor":"1a237e","AccentColor":"d500f9","BackgroundColor":"0d47a1","OutlineColor":"311b92"}') },
-        ['Ubuntu']        = { 7, httpService:JSONDecode('{"FontColor":"ffffff","MainColor":"424242","AccentColor":"ff6f00","BackgroundColor":"212121","OutlineColor":"616161"}') },
-        ['Quartz']        = { 8, httpService:JSONDecode('{"FontColor":"ffffff","MainColor":"37474f","AccentColor":"26a69a","BackgroundColor":"263238","OutlineColor":"455a64"}') },
-    }
+local toggleButton = Instance.new("TextButton")
+toggleButton.Size = UDim2.new(0, 50, 0, 50)
+toggleButton.Position = UDim2.new(0, 10, 0, 10)
+toggleButton.BackgroundColor3 = Color3.fromRGB(255, 105, 180)
+toggleButton.Text = "☰"
+toggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+toggleButton.TextScaled = true
+toggleButton.Parent = screenGui
 
-    function ThemeManager:ApplyTheme(theme)
-        local customThemeData = self:GetCustomTheme(theme)
-        local data = customThemeData or self.BuiltInThemes[theme]
+-- Tạo Main Frame và ẩn nó ban đầu
+local mainFrame = Instance.new("Frame")
+mainFrame.Size = UDim2.new(0, 500, 0, 350)  -- Tăng chiều rộng của UI
+mainFrame.Position = UDim2.new(0.5, -250, 0.5, -175)
+mainFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+mainFrame.BorderColor3 = Color3.fromRGB(255, 105, 180)  -- Màu hồng ở rìa UI
+mainFrame.BorderSizePixel = 2
+mainFrame.Visible = false  -- Ẩn ban đầu
+mainFrame.Active = true
+mainFrame.Draggable = true  -- Khả năng di chuyển UI
+mainFrame.Parent = screenGui
 
-        if not data then return end
+-- Tạo Label Shiny Hub
+local hubLabel = Instance.new("TextLabel")
+hubLabel.Size = UDim2.new(0, 100, 0, 30)
+hubLabel.Position = UDim2.new(0, 10, 0, 10)
+hubLabel.BackgroundTransparency = 1
+hubLabel.Text = "Shiny Hub"
+hubLabel.TextColor3 = Color3.fromRGB(255, 105, 180)
+hubLabel.TextScaled = true
+hubLabel.Parent = mainFrame
 
-        local scheme = data[2]
-        for idx, col in next, customThemeData or scheme do
-            self.Library[idx] = Color3.fromHex(col)
-            
-            if Options[idx] then
-                Options[idx]:SetValueRGB(Color3.fromHex(col))
+-- Thêm nút đóng UI vào góc trên cùng
+local closeButton = Instance.new("TextButton")
+closeButton.Size = UDim2.new(0, 30, 0, 30)
+closeButton.Position = UDim2.new(1, -40, 0, 10)
+closeButton.BackgroundColor3 = Color3.fromRGB(255, 105, 180)
+closeButton.Text = "X"
+closeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+closeButton.TextScaled = true
+closeButton.Parent = mainFrame
+
+-- Tạo Sidebar cho menu bên trái
+local sidebar = Instance.new("ScrollingFrame")  -- Thay vì Frame, dùng ScrollingFrame để cuộn
+sidebar.Size = UDim2.new(0, 150, 1, -50)
+sidebar.Position = UDim2.new(0, 0, 0, 50)  -- Di chuyển tab xuống
+sidebar.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+sidebar.BorderSizePixel = 0
+sidebar.ScrollBarThickness = 6  -- Độ dày thanh cuộn
+sidebar.CanvasSize = UDim2.new(0, 0, 0, 320)  -- Đặt kích thước canvas để hỗ trợ cuộn
+sidebar.Parent = mainFrame
+
+-- Tạo các nút cho menu bên trái
+local menuItems = {"Owner Info", "Shop", "Status & Server", "Settings Farm", "Main Farm", "Get Item", "Fruits & Raid", "Upgraded Race"}
+local buttons = {}
+
+for i, menuItem in ipairs(menuItems) do
+    local button = Instance.new("TextButton")
+    button.Size = UDim2.new(1, 0, 0, 40)  -- Chiều cao nút nhỏ hơn
+    button.Position = UDim2.new(0, 0, 0, (i-1) * 40)
+    button.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    button.Text = menuItem
+    button.TextColor3 = Color3.fromRGB(255, 255, 255)
+    button.TextScaled = true
+    button.Parent = sidebar
+    table.insert(buttons, button)
+end
+
+-- Tạo Content Frame để hiển thị nội dung của mỗi tab
+local contentFrame = Instance.new("Frame")
+contentFrame.Size = UDim2.new(1, -150, 1, -50)
+contentFrame.Position = UDim2.new(0, 150, 0, 50)
+contentFrame.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+contentFrame.Parent = mainFrame
+
+-- Nội dung cho Tab 1 (Owner Info) với các Toggle
+local toggleHolder = Instance.new("Frame")
+toggleHolder.Size = UDim2.new(1, 0, 1, 0)
+toggleHolder.Position = UDim2.new(0, 0, 0, 0)
+toggleHolder.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+toggleHolder.Parent = contentFrame
+
+local toggleItems = {"Auto Farm", "Auto Collect", "Auto Attack"}
+local toggles = {}
+local toggleStates = {}
+
+for i, toggleItem in ipairs(toggleItems) do
+    local toggleContainer = Instance.new("Frame")
+    toggleContainer.Size = UDim2.new(1, -20, 0, 40)
+    toggleContainer.Position = UDim2.new(0, 10, 0, (i-1) * 50)
+    toggleContainer.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+    toggleContainer.BorderSizePixel = 0
+    toggleContainer.Parent = toggleHolder
+    
+    local toggleLabel = Instance.new("TextLabel")
+    toggleLabel.Size = UDim2.new(0.7, 0, 1, 0)
+    toggleLabel.Position = UDim2.new(0, 10, 0, 0)
+    toggleLabel.BackgroundTransparency = 1
+    toggleLabel.Text = toggleItem
+    toggleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+    toggleLabel.TextScaled = true
+    toggleLabel.Parent = toggleContainer
+    
+    local toggleSwitch = Instance.new("Frame")
+    toggleSwitch.Size = UDim2.new(0.2, 0, 0.6, 0)
+    toggleSwitch.Position = UDim2.new(0.75, 0, 0.2, 0)
+    toggleSwitch.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    toggleSwitch.BorderSizePixel = 0
+    toggleSwitch.Parent = toggleContainer
+    
+    local toggleKnob = Instance.new("Frame")
+    toggleKnob.Size = UDim2.new(0.5, 0, 1, 0)
+    toggleKnob.Position = UDim2.new(0, 0, 0, 0)
+    toggleKnob.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    toggleKnob.BorderSizePixel = 0
+    toggleKnob.Parent = toggleSwitch
+    
+    toggleStates[i] = false  -- Mặc định trạng thái của Toggle là OFF
+    
+    toggleContainer.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            toggleStates[i] = not toggleStates[i]
+            if toggleStates[i] then
+                toggleKnob:TweenPosition(UDim2.new(1, -toggleKnob.Size.X.Offset, 0, 0), "Out", "Sine", 0.2, true)
+                toggleSwitch.BackgroundColor3 = Color3.fromRGB(0, 255, 0)  -- Màu xanh lá khi bật
+            else
+                toggleKnob:TweenPosition(UDim2.new(0, 0, 0, 0), "Out", "Sine", 0.2, true)
+                toggleSwitch.BackgroundColor3 = Color3.fromRGB(0, 0, 0)  -- Quay lại màu đen khi tắt
             end
         end
+    end)
+    
+    table.insert(toggles, toggleContainer)
+end
 
-        self:ThemeUpdate()
-    end
+-- Chức năng chuyển đổi tab (hiển thị nội dung cơ bản cho các tab khác)
+local contentText = Instance.new("TextLabel")
+contentText.Size = UDim2.new(1, 0, 1, 0)
+contentText.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+contentText.TextColor3 = Color3.fromRGB(255, 255, 255)
+contentText.TextScaled = true
+contentText.Text = "Content for Tab"
+contentText.Visible = false  -- Ban đầu ẩn, chỉ hiển thị khi chọn tab khác ngoài tab 1
+contentText.Parent = contentFrame
 
-    function ThemeManager:ThemeUpdate()
-        local options = { "FontColor", "MainColor", "AccentColor", "BackgroundColor", "OutlineColor" }
-        for i, field in next, options do
-            if Options and Options[field] then
-                self.Library[field] = Options[field].Value
-            end
-        end
-
-        self.Library.AccentColorDark = self.Library:GetDarkerColor(self.Library.AccentColor);
-        self.Library:UpdateColorsUsingRegistry()
-    end
-
-    function ThemeManager:LoadDefault()        
-        local theme = 'Default'
-        local content = isfile(self.Folder .. '/themes/default.txt') and readfile(self.Folder .. '/themes/default.txt')
-
-        local isDefault = true
-        if content then
-            if self.BuiltInThemes[content] then
-                theme = content
-            elseif self:GetCustomTheme(content) then
-                theme = content
-                isDefault = false;
-            end
-        elseif self.BuiltInThemes[self.DefaultTheme] then
-            theme = self.DefaultTheme
-        end
-
-        if isDefault then
-            Options.ThemeManager_ThemeList:SetValue(theme)
-        else
-            self:ApplyTheme(theme)
-        end
-    end
-
-    function ThemeManager:SaveDefault(theme)
-        writefile(self.Folder .. '/themes/default.txt', theme)
-    end
-
-    function ThemeManager:CreateThemeManager(groupbox)
-        groupbox:AddLabel('Background color'):AddColorPicker('BackgroundColor', { Default = self.Library.BackgroundColor });
-        groupbox:AddLabel('Main color'):AddColorPicker('MainColor', { Default = self.Library.MainColor });
-        groupbox:AddLabel('Accent color'):AddColorPicker('AccentColor', { Default = self.Library.AccentColor });
-        groupbox:AddLabel('Outline color'):AddColorPicker('OutlineColor', { Default = self.Library.OutlineColor });
-        groupbox:AddLabel('Font color'):AddColorPicker('FontColor', { Default = self.Library.FontColor });
-
-        local ThemesArray = {}
-        for Name, Theme in next, self.BuiltInThemes do
-            table.insert(ThemesArray, Name)
-        end
-
-        table.sort(ThemesArray, function(a, b) return self.BuiltInThemes[a][1] < self.BuiltInThemes[b][1] end)
-
-        groupbox:AddDivider()
-        groupbox:AddDropdown('ThemeManager_ThemeList', { Text = 'Theme list', Values = ThemesArray, Default = 1 })
-
-        groupbox:AddButton('Set as default', function()
-            self:SaveDefault(Options.ThemeManager_ThemeList.Value)
-            self.Library:Notify(string.format('Set default theme to %q', Options.ThemeManager_ThemeList.Value))
-        end)
-
-        Options.ThemeManager_ThemeList:OnChanged(function()
-            self:ApplyTheme(Options.ThemeManager_ThemeList.Value)
-        end)
-
-        groupbox:AddDivider()
-        groupbox:AddInput('ThemeManager_CustomThemeName', { Text = 'Custom theme name' })
-        groupbox:AddDropdown('ThemeManager_CustomThemeList', { Text = 'Custom themes', Values = self:ReloadCustomThemes(), AllowNull = true, Default = 1 })
-        groupbox:AddDivider()
-        
-        groupbox:AddButton('Save theme', function() 
-            self:SaveCustomTheme(Options.ThemeManager_CustomThemeName.Value)
-
-            Options.ThemeManager_CustomThemeList:SetValues(self:ReloadCustomThemes())
-            Options.ThemeManager_CustomThemeList:SetValue(nil)
-        end):AddButton('Load theme', function() 
-            self:ApplyTheme(Options.ThemeManager_CustomThemeList.Value) 
-        end)
-
-        groupbox:AddButton('Refresh list', function()
-            Options.ThemeManager_CustomThemeList:SetValues(self:ReloadCustomThemes())
-            Options.ThemeManager_CustomThemeList:SetValue(nil)
-        end)
-
-        groupbox:AddButton('Set as default', function()
-            if Options.ThemeManager_CustomThemeList.Value ~= nil and Options.ThemeManager_CustomThemeList.Value ~= '' then
-                self:SaveDefault(Options.ThemeManager_CustomThemeList.Value)
-                self.Library:Notify(string.format('Set default theme to %q', Options.ThemeManager_CustomThemeList.Value))
-            end
-        end)
-
-        ThemeManager:LoadDefault()
-
-        local function UpdateTheme()
-            self:ThemeUpdate()
-        end
-
-        Options.BackgroundColor:OnChanged(UpdateTheme)
-        Options.MainColor:OnChanged(UpdateTheme)
-        Options.AccentColor:OnChanged(UpdateTheme)
-        Options.OutlineColor:OnChanged(UpdateTheme)
-        Options.FontColor:OnChanged(UpdateTheme)
-    end
-
-    function ThemeManager:GetCustomTheme(file)
-        local path = self.Folder .. '/themes/' .. file
-        if not isfile(path) then
-            return nil
-        end
-
-        local data = readfile(path)
-        local success, decoded = pcall(httpService.JSONDecode, httpService, data)
-        
-        if not success then
-            return nil
-        end
-
-        return decoded
-    end
-
-    function ThemeManager:SaveCustomTheme(file)
-        if file:gsub(' ', '') == '' then
-            return self.Library:Notify('Invalid file name for theme (empty)', 3)
-        end
-
-        local theme = {}
-        local fields = { "FontColor", "MainColor", "AccentColor", "BackgroundColor", "OutlineColor" }
-
-        for _, field in next, fields do
-            theme[field] = Options[field].Value:ToHex()
-        end
-
-        writefile(self.Folder .. '/themes/' .. file .. '.json', httpService:JSONEncode(theme))
-    end
-
-    function ThemeManager:ReloadCustomThemes()
-        local list = listfiles(self.Folder .. '/themes')
-
-        local out = {}
-        for i = 1, #list do
-            local file = list[i]
-            if file:sub(-5) == '.json' then
-                local pos = file:find('.json', 1, true)
-                local name = file:sub(1, pos - 1)
-                name = name:sub(#self.Folder + 9)
-
-                table.insert(out, name)
-            end
-        end
-
-        return out
+local function showContent(index)
+    if index == 1 then
+        toggleHolder.Visible = true
+        contentText.Visible = false  -- Ẩn nội dung mặc định khi hiển thị các toggle
+    else
+        toggleHolder.Visible = false
+        contentText.Text = "Content for " .. menuItems[index]
+        contentText.Visible = true
     end
 end
 
-local Main = Window:CreateTab(6031154871, "Main")
-local Misc = Main:CreateTab(6031154871, "Misc Farm")
-local Stats = Main:CreateTab(6031154871, "Stats")
-local PvP = Main:CreateTab(6031154871, "PvP")
-local Teleport = Main:CreateTab(6031154871, "Teleport")
-local Dungeon = Main:CreateTab(6031154871, "Dungeon")
-local Market = Main:CreateTab(6031154871, "Market")
-local DevilFruit = Main:CreateTab(6031154871, "Devil Fruit")
+-- Kết nối các nút tab với hàm showContent
+for i, button in ipairs(buttons) do
+    button.MouseButton1Click:Connect(function()
+        showContent(i)
+    end)
+end
 
-local Main1 = Main:CreatePage("Main 1")
-local Main2 = Main:CreatePage("Main 2")
-local Main3 = Main:CreatePage("Main 3")
-local Main4 = Main:CreatePage("Main 4")
-local Main5 = Main:CreatePage("Main 5")
-local Main6 = Main:CreatePage("Main 6")
-local Main7 = Main:CreatePage("Main 7")
-local MiscFarm1 = Misc:CreatePage("Misc Farm 1")
-local Main8 = Stats:CreatePage("Main 8")
-local Main9 = Stats:CreatePage("Main 9")
-local Main10 = PvP:CreatePage("Main 10")
-local Main11 = Teleport:CreatePage("Main 11")
-local Main12 = Dungeon:CreatePage("Main 12")
-local Main13 = Dungeon:CreatePage("Main 13")
-local Main14 = Market:CreatePage("Main 14")
-local Main15 = Market:CreatePage("Main 15")
-local Main16 = DevilFruit:CreatePage("Main 16")
-local Main17 = Misc:CreatePage("Main 17")
-local Main18 = Misc:CreatePage("Main 18")
-local Main19 = Misc:CreatePage("Main 19")
-local Main20 = Misc:CreatePage("Main 20")
+-- Chức năng bật/tắt UI
+toggleButton.MouseButton1Click:Connect(function()
+    mainFrame.Visible = not mainFrame.Visible
+end)
+
+-- Chức năng đóng UI
+closeButton.MouseButton1Click:Connect(function()
+    mainFrame.Visible = false
+end)
+
+-- Mặc định hiển thị nội dung của tab 1 (Owner Info)
+showContent(1)
