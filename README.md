@@ -16,7 +16,7 @@ toggleButton.Parent = screenGui
 
 -- Tạo Main Frame và ẩn nó ban đầu
 local mainFrame = Instance.new("Frame")
-mainFrame.Size = UDim2.new(0, 500, 0, 350)  -- Tăng chiều rộng của UI
+mainFrame.Size = UDim2.new(0, 0, 0, 0)  -- Bắt đầu với kích thước bằng 0
 mainFrame.Position = UDim2.new(0.5, -250, 0.5, -175)
 mainFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
 mainFrame.BorderColor3 = Color3.fromRGB(255, 105, 180)  -- Màu hồng ở rìa UI
@@ -123,41 +123,19 @@ for i, toggleItem in ipairs(toggleItems) do
     
     toggleStates[i] = false  -- Mặc định trạng thái của Toggle là OFF
     
-    -- Thêm hoạt ảnh bật/tắt cho các toggle
-    local tweenInfo = TweenInfo.new(0.2, Enum.EasingStyle.Sine, Enum.EasingDirection.Out)
-    
-    local function updateToggleUI()
-        if toggleStates[i] then
-            TweenService:Create(toggleKnob, tweenInfo, {Position = UDim2.new(1, -toggleKnob.Size.X.Offset, 0, 0)}):Play()
-            TweenService:Create(toggleSwitch, tweenInfo, {BackgroundColor3 = Color3.fromRGB(0, 255, 0)}):Play()
-        else
-            TweenService:Create(toggleKnob, tweenInfo, {Position = UDim2.new(0, 0, 0, 0)}):Play()
-            TweenService:Create(toggleSwitch, tweenInfo, {BackgroundColor3 = Color3.fromRGB(0, 0, 0)}):Play()
-        end
-    end
-    
-    toggleContainer.MouseButton1Click:Connect(function()
-        toggleStates[i] = not toggleStates[i]
-        updateToggleUI()
-        
-        -- Nếu toggle là "Auto Farm", thêm script auto jump
-        if toggleItem == "Auto Farm" then
-            local player = game.Players.LocalPlayer
-            local character = player.Character or player.CharacterAdded:Wait()
-            local humanoid = character:FindFirstChildOfClass("Humanoid")
-            if humanoid then
-                if toggleStates[i] then
-                    while toggleStates[i] do
-                        humanoid:ChangeState(Enum.HumanoidStateType.Physics)
-                        humanoid:Move(Vector3.new(0, 50, 0), true)  -- Nhảy liên tục
-                        wait(1)  -- Thay đổi thời gian nhảy nếu cần
-                    end
-                end
+    toggleContainer.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            toggleStates[i] = not toggleStates[i]
+            if toggleStates[i] then
+                toggleKnob:TweenPosition(UDim2.new(1, -toggleKnob.Size.X.Offset, 0, 0), "Out", "Sine", 0.2, true)
+                toggleSwitch.BackgroundColor3 = Color3.fromRGB(0, 255, 0)  -- Màu xanh lá khi bật
+            else
+                toggleKnob:TweenPosition(UDim2.new(0, 0, 0, 0), "Out", "Sine", 0.2, true)
+                toggleSwitch.BackgroundColor3 = Color3.fromRGB(0, 0, 0)  -- Quay lại màu đen khi tắt
             end
         end
     end)
     
-    updateToggleUI()
     table.insert(toggles, toggleContainer)
 end
 
@@ -189,22 +167,39 @@ for i, button in ipairs(buttons) do
     end)
 end
 
--- Chức năng bật/tắt UI với hiệu ứng hoạt ảnh
-local function toggleMainFrameVisibility()
-    local targetVisibility = not mainFrame.Visible
-    local tweenInfo = TweenInfo.new(0.5, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
-    local tweenGoal = {Size = targetVisibility and UDim2.new(0, 500, 0, 350) or UDim2.new(0, 0, 0, 0)}
-    TweenService:Create(mainFrame, tweenInfo, tweenGoal):Play()
-    mainFrame.Visible = targetVisibility
+-- Tạo tween cho hiệu ứng phóng to và thu nhỏ UI
+local tweenInfo = TweenInfo.new(0.5, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut)
+local openSize = UDim2.new(0, 500, 0, 350)  -- Kích thước cuối cùng khi mở
+local closedSize = UDim2.new(0, 0, 0, 0)    -- Kích thước cuối cùng khi đóng
+
+local function openUI()
+    mainFrame.Visible = true
+    local tweenOpen = TweenService:Create(mainFrame, tweenInfo, {Size = openSize})
+    tweenOpen:Play()
 end
 
-toggleButton.MouseButton1Click:Connect(toggleMainFrameVisibility)
+local function closeUI()
+    local tweenClose = TweenService:Create(mainFrame, tweenInfo, {Size = closedSize})
+    tweenClose:Play()
+    tweenClose.Completed:Connect(function()
+        mainFrame.Visible = false
+    end)
+end
+
+-- Chức năng bật/tắt UI
+toggleButton.MouseButton1Click:Connect(function()
+    if mainFrame.Visible then
+        closeUI()
+    else
+        openUI()
+    end
+end)
 
 -- Chức năng đóng UI
 closeButton.MouseButton1Click:Connect(function()
-    mainFrame.Visible = false
+    closeUI()
 end)
 
 -- Mặc định hiển thị nội dung của tab 1 (Owner Info)
 showContent(1)
-print("moi")
+print("nut an cam")
