@@ -2113,13 +2113,13 @@ end
                         end
                         fkwarp = true
                     end
-                    wait(.08)
+                    wait(.07)
                     game:GetService("Players").LocalPlayer.Character:WaitForChild("Humanoid"):ChangeState(15)
                     repeat wait(_G.Fast_Delay) until game:GetService("Players").LocalPlayer.Character:WaitForChild("Humanoid").Health > 0
                     wait(.1)
                     Com("F_", "SetSpawnPoint")
                 end
-                wait(0.2)
+                wait(0.1)
 
                 return
             end)
@@ -2553,7 +2553,7 @@ end
 --------------------------------------------------------------------------------------------------------------------------------------------
 --Create Tabs
 local Farming = Tabs.Main:AddSection("Farming")
-local listfastattack = {'Normal','Slow','Super','Low'}
+local listfastattack = {'Normal','Super'}
 
     local DropdownDelayAttack = Tabs.Main:AddDropdown("DropdownDelayAttack", {
         Title = "Select Fast Attack",
@@ -2566,7 +2566,7 @@ local listfastattack = {'Normal','Slow','Super','Low'}
     DropdownDelayAttack:OnChanged(function(Value)
     _G.FastAttackZINER_Mode = Value
 	if _G.FastAttackWinterhub_Mode == "Normal" then
-		_G.Fast_Delay = 0.9
+		_G.Fast_Delay = 0.6
 	elseif _G.FastAttackWinterhub_Mode == "Super" then
 		_G.Fast_Delay = 0
 	 end
@@ -3126,7 +3126,7 @@ local function TeleportAroundEnemy(enemyCFrame)
     local teleportPosition = enemyCFrame.Position + randomDirection
 
     -- Add a delay before teleporting
-    wait(math.random(1, 2))  -- Delay between 1 to 2 seconds
+    wait(math.random(1, 1.5))  -- Delay between 1 to 2 seconds
     Tween(CFrame.new(teleportPosition))
 end
 
@@ -4867,7 +4867,7 @@ local function UpdateCombatProperties()
             CameraShaker:Stop()
             
             -- Modify combat properties for faster attack
-            y.activeController.timeToNextAttack = 0  -- Instant attack
+            y.activeController.timeToNextAttack = 0.1  -- Small delay for instant attack feel
             y.activeController.hitboxMagnitude = 60  -- Large hitbox range
             y.activeController.active = true  -- Enable combat
             y.activeController.timeToNextBlock = 0  -- Instant block
@@ -4882,12 +4882,26 @@ end
 
 -- Update combat properties on every render step
 spawn(function()
-    game:GetService("RunService").RenderStepped:Connect(function()
+    while wait(0.1) do  -- Adjusted the wait time for responsiveness
         if _G.FastNe then
             UpdateCombatProperties()
         end
-    end)
+    end
 end)
+
+-- Ensure the attack is triggered properly
+spawn(function()
+    while wait(0.1) do
+        if _G.FastNe then
+            pcall(function()
+                if y.activeController then
+                    y.activeController:Attack()  -- Trigger attack
+                end
+            end)
+        end
+    end
+end)
+
 
  
 local ToggleBringMob = Tabs.Setting:AddToggle("ToggleBringMob", {
