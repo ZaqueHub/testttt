@@ -27,8 +27,8 @@ local SaveManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/T
 local InterfaceManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/Tienvn123tkvn/Test/main/ZierhubfaceManager.lua"))()
 ----------------------------------------------------------------------------------------------------------------------------------------------
 local Window = Fluent:CreateWindow({
-    Title = "ZINER HUB",
-    SubTitle = "Kai Wibu",
+    Title = "Shiny Hub",
+    SubTitle = "Tempest",
     TabWidth = 160,
     Size = UDim2.fromOffset(500, 320),
     Acrylic = true,
@@ -4866,7 +4866,7 @@ local function UpdateCombatProperties()
             y.activeController.focusStart = tick()
             y.activeController.increment = 1
             y.activeController.blocking = false
-            y.activeController.attacking = true
+            y.activeController.attacking = false
             y.activeController.humanoid.AutoRotate = true
         end)
     end
