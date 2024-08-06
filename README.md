@@ -28,7 +28,7 @@ local InterfaceManager = loadstring(game:HttpGet("https://raw.githubusercontent.
 ----------------------------------------------------------------------------------------------------------------------------------------------
 local Window = Fluent:CreateWindow({
     Title = "Shiny Hub",
-    SubTitle = "",
+    SubTitle = "ZZ",
     TabWidth = 160,
     Size = UDim2.fromOffset(500, 320),
     Acrylic = true,
@@ -2095,56 +2095,36 @@ end
         Speed = 300
     end
     if BypassTP then
-        if Distance > 3000 and not AutoNextIsland and not (
-    game.Players.LocalPlayer.Backpack:FindFirstChild("Special Microchip") or
-    game.Players.LocalPlayer.Character:FindFirstChild("Special Microchip") or
-    game.Players.LocalPlayer.Backpack:FindFirstChild("God's Chalice") or
-    game.Players.LocalPlayer.Character:FindFirstChild("God's Chalice") or
-    game.Players.LocalPlayer.Backpack:FindFirstChild("Hallow Essence") or
-    game.Players.LocalPlayer.Character:FindFirstChild("Hallow Essence") or
-    game.Players.LocalPlayer.Backpack:FindFirstChild("Sweet Chalice") or
-    game.Players.LocalPlayer.Character:FindFirstChild("Sweet Chalice")) and
-    not (Name == "Fishman Commando" or Name == "Fishman Warrior") then
-    
-    pcall(function()
-        tween:Cancel()
-        fkwarp = false
-        
-        local spawnPoint = game:GetService("Players").LocalPlayer.Data:FindFirstChild("SpawnPoint").Value
-        local lastSpawnPoint = game:GetService("Players").LocalPlayer.Data:FindFirstChild("LastSpawnPoint").Value
-        
-        if spawnPoint == tostring(GetIsLand(RealTarget)) then
-            wait(0.1)
-            Com("F_", "TeleportToSpawn")
-            
-        elseif lastSpawnPoint == tostring(GetIsLand(RealTarget)) then
-            local humanoid = game:GetService("Players").LocalPlayer.Character:WaitForChild("Humanoid")
-            humanoid:ChangeState(15)
-            wait(0.1)
-            repeat wait(_G.Fast_Delay) until humanoid.Health > 0
-            
-        else
-            local humanoid = game:GetService("Players").LocalPlayer.Character:WaitForChild("Humanoid")
-            
-            if humanoid.Health > 0 then
-                if not fkwarp then
-                    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = RealTarget
+        if Distance > 3000 and not AutoNextIsland and not (game.Players.LocalPlayer.Backpack:FindFirstChild("Special Microchip") or game.Players.LocalPlayer.Character:FindFirstChild("Special Microchip") or game.Players.LocalPlayer.Backpack:FindFirstChild("God's Chalice") or game.Players.LocalPlayer.Character:FindFirstChild("God's Chalice") or game.Players.LocalPlayer.Backpack:FindFirstChild("Hallow Essence") or game.Players.LocalPlayer.Character:FindFirstChild("Hallow Essence") or game.Players.LocalPlayer.Character:FindFirstChild("Sweet Chalice") or game.Players.LocalPlayer.Backpack:FindFirstChild("Sweet Chalice")) and not (Name == "Fishman Commando" or Name == "Fishman Warrior") then
+            pcall(function()
+                tween:Cancel()
+                fkwarp = false
+                if game:GetService("Players")["LocalPlayer"].Data:FindFirstChild("SpawnPoint").Value == tostring(GetIsLand(RealTarget)) then
+                    wait(.1)
+                    Com("F_", "TeleportToSpawn")
+                elseif game:GetService("Players")["LocalPlayer"].Data:FindFirstChild("LastSpawnPoint").Value == tostring(GetIsLand(RealTarget)) then
+                    game:GetService("Players").LocalPlayer.Character:WaitForChild("Humanoid"):ChangeState(15)
+                    wait(0.1)
+                    repeat wait(_G.Fast_Delay) until game:GetService("Players").LocalPlayer.Character:WaitForChild("Humanoid").Health > 0
+                else
+                    if game:GetService("Players").LocalPlayer.Character:WaitForChild("Humanoid").Health > 0 then
+                        if fkwarp == false then
+                            game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = RealTarget
+                        end
+                        fkwarp = true
+                    end
+                    wait(.08)
+                    game:GetService("Players").LocalPlayer.Character:WaitForChild("Humanoid"):ChangeState(15)
+                    repeat wait(_G.Fast_Delay) until game:GetService("Players").LocalPlayer.Character:WaitForChild("Humanoid").Health > 0
+                    wait(.1)
+                    Com("F_", "SetSpawnPoint")
                 end
-                fkwarp = true
-            end
-            
-            wait(0.08)
-            humanoid:ChangeState(15)
-            repeat wait(_G.Fast_Delay) until humanoid.Health > 0
-            wait(0.1)
-            Com("F_", "SetSpawnPoint")
-        end
-        
-        wait(0.2)
-        return
-    end)
-end
+                wait(0.1)
 
+                return
+            end)
+        end
+    end
 
     local tween_s = game:service "TweenService"
     local info = TweenInfo.new(
@@ -3116,82 +3096,83 @@ local StatusBone = Tabs.Main:AddParagraph({
 
 
 local ToggleBone = Tabs.Main:AddToggle("ToggleBone", {
-    Title = "Auto farm Bone (vip]",
-    Description = "", 
-    Default = false })
+    Title = "Auto farm Bone (VIP)",
+    Description = "Efficient Bone Farming with Smooth Operation",
+    Default = false
+})
+
 ToggleBone:OnChanged(function(Value)
     _G.AutoBone = Value
-    if Value == false then
+    if not Value then
         wait()
         Tween(game:GetService("Players").LocalPlayer.Character.HumanoidRootPart.CFrame)
         wait()
     end
 end)
+
 Options.ToggleBone:SetValue(false)
-local BoneCFrame = CFrame.new(-9515.75, 174.8521728515625, 6079.40625)
-local BoneCFrame2 = CFrame.new(-9359.453125, 141.32679748535156, 5446.81982421875)
+
+local BoneCFrame = CFrame.new(-9515.75, 174.852, 6079.406)
+local BoneCFrame2 = CFrame.new(-9359.453, 141.327, 5446.82)
+
+-- Function to teleport to random positions around the enemy
+local function TeleportAroundEnemy(enemyCFrame)
+    local directions = {
+        Vector3.new(-5, 0, 0), -- left
+        Vector3.new(5, 0, 0),  -- right
+        Vector3.new(0, 0, -5), -- behind
+        Vector3.new(0, 5, 0),  -- above
+        Vector3.new(0, -5, 0)  -- below
+    }
+    
+    local randomDirection = directions[math.random(1, #directions)]
+    local teleportPosition = enemyCFrame.Position + randomDirection
+    Tween(CFrame.new(teleportPosition))
+end
+
 spawn(function()
     while wait() do
         if _G.AutoBone then
             pcall(function()
                 local player = game:GetService("Players").LocalPlayer
-                local playerGui = player.PlayerGui.Main
-                local questGui = playerGui.Quest
+                local questGui = player.PlayerGui.Main.Quest
                 local questTitle = questGui.Container.QuestTitle.Title.Text
-                local replicatedStorage = game:GetService("ReplicatedStorage")
-                local enemies = game:GetService("Workspace").Enemies
-                local character = player.Character
-                local humanoidRootPart = character and character:FindFirstChild("HumanoidRootPart")
-
-                -- Check and abandon quest if not the target quest
+                
                 if not string.find(questTitle, "Demonic Soul") then
-                    replicatedStorage.Remotes.CommF_:InvokeServer("AbandonQuest")
+                    game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("AbandonQuest")
                 end
 
-                -- If the quest is not visible, move to target and start the quest
                 if not questGui.Visible then
                     toTarget(BoneCFrame)
-                    if humanoidRootPart and (BoneCFrame.Position - humanoidRootPart.Position).Magnitude <= 3 then
-                        replicatedStorage.Remotes.CommF_:InvokeServer("StartQuest", "HauntedQuest2", 1)
+                    if (BoneCFrame.Position - player.Character.HumanoidRootPart.Position).Magnitude <= 3 then    
+                        game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("StartQuest", "HauntedQuest2", 1)
                     end
+
                 elseif questGui.Visible then
-                    -- Check for target enemies and engage
-                    local targetFound = enemies:FindFirstChild("Reborn Skeleton") or 
-                                        enemies:FindFirstChild("Living Zombie") or 
-                                        enemies:FindFirstChild("Demonic Soul") or 
-                                        enemies:FindFirstChild("Posessed Mummy")
-                    
-                    if targetFound then
-                        for _, enemy in pairs(enemies:GetChildren()) do
-                            local enemyHumanoidRootPart = enemy:FindFirstChild("HumanoidRootPart")
-                            local enemyHumanoid = enemy:FindFirstChild("Humanoid")
-                            
-                            if enemyHumanoidRootPart and enemyHumanoid and enemyHumanoid.Health > 0 then
-                                if enemy.Name == "Reborn Skeleton" or enemy.Name == "Living Zombie" or enemy.Name == "Demonic Soul" or enemy.Name == "Posessed Mummy" then
-                                    if string.find(questTitle, "Demonic Soul") then
-                                        repeat
-                                            wait(_G.Fast_Delay)
-                                            AttackNoCoolDown()
-                                            AutoHaki()
-                                            bringmob = true
-                                            EquipTool(SelectWeapon)
-                                            Tween(enemyHumanoidRootPart.CFrame * CFrame.new(posX, posY, posZ))
-                                            
-                                            -- Modify enemy properties
-                                            enemyHumanoidRootPart.Size = Vector3.new(60, 60, 60)
-                                            enemyHumanoidRootPart.Transparency = 1
-                                            enemyHumanoid.JumpPower = 0
-                                            enemyHumanoid.WalkSpeed = 0
-                                            enemyHumanoidRootPart.CanCollide = false
-                                            
-                                            -- Set farming position
-                                            FarmPos = enemyHumanoidRootPart.CFrame
-                                            MonFarm = enemy.Name
-                                        until not _G.AutoBone or enemyHumanoid.Health <= 0 or not enemy.Parent or not questGui.Visible
-                                    else
-                                        replicatedStorage.Remotes.CommF_:InvokeServer("AbandonQuest")
-                                        bringmob = false
-                                    end
+                    local enemies = game:GetService("Workspace").Enemies:GetChildren()
+                    for _, enemy in pairs(enemies) do
+                        if enemy:FindFirstChild("HumanoidRootPart") and enemy:FindFirstChild("Humanoid") and enemy.Humanoid.Health > 0 then
+                            if enemy.Name == "Reborn Skeleton" or enemy.Name == "Living Zombie" or enemy.Name == "Demonic Soul" or enemy.Name == "Posessed Mummy" then
+                                if string.find(questTitle, "Demonic Soul") then
+                                    repeat wait(_G.Fast_Delay)
+                                        AttackNoCoolDown()
+                                        AutoHaki()
+                                        bringmob = true
+                                        EquipTool(SelectWeapon)
+
+                                        -- Dynamic teleportation around the enemy
+                                        TeleportAroundEnemy(enemy.HumanoidRootPart.CFrame)
+                                        enemy.HumanoidRootPart.Size = Vector3.new(60, 60, 60)
+                                        enemy.HumanoidRootPart.Transparency = 1
+                                        enemy.Humanoid.JumpPower = 0
+                                        enemy.Humanoid.WalkSpeed = 0
+                                        enemy.HumanoidRootPart.CanCollide = false
+                                        FarmPos = enemy.HumanoidRootPart.CFrame
+                                        MonFarm = enemy.Name
+                                    until not _G.AutoBone or enemy.Humanoid.Health <= 0 or not enemy.Parent or not questGui.Visible
+                                else
+                                    game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("AbandonQuest")
+                                    bringmob = false
                                 end
                             end
                         end
