@@ -3115,14 +3115,15 @@ Options.ToggleBone:SetValue(false)
 local BoneCFrame = CFrame.new(-9515.75, 174.852, 6079.406)
 local BoneCFrame2 = CFrame.new(-9359.453, 141.327, 5446.82)
 
--- Function to teleport to random positions around the enemy
+-- Function to teleport to positions around the enemy at a distance of 40 units
 local function TeleportAroundEnemy(enemyCFrame)
     local directions = {
-        Vector3.new(-5, 0, 0), -- left
-        Vector3.new(5, 0, 0),  -- right
-        Vector3.new(0, 0, -5), -- behind
-        Vector3.new(0, 5, 0),  -- above
-        Vector3.new(0, -5, 0)  -- below
+        Vector3.new(-40, 0, 0),  -- left
+        Vector3.new(40, 0, 0),   -- right
+        Vector3.new(0, 0, -40),  -- behind
+        Vector3.new(0, 40, 0),   -- above
+        Vector3.new(0, -40, 0),  -- below
+        Vector3.new(0, 0, 40)    -- in front
     }
     
     local randomDirection = directions[math.random(1, #directions)]
@@ -3160,7 +3161,7 @@ spawn(function()
                                         bringmob = true
                                         EquipTool(SelectWeapon)
 
-                                        -- Dynamic teleportation around the enemy
+                                        -- Dynamic teleportation around the enemy with 40-unit distance
                                         TeleportAroundEnemy(enemy.HumanoidRootPart.CFrame)
                                         enemy.HumanoidRootPart.Size = Vector3.new(60, 60, 60)
                                         enemy.HumanoidRootPart.Transparency = 1
@@ -3182,6 +3183,7 @@ spawn(function()
         end
     end
 end)
+
 
 
 local ToggleRandomBone = Tabs.Main:AddToggle("ToggleRandomBone", {Title = "Auto Random Bone",Description = "", Default = false })
