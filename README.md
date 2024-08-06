@@ -3223,88 +3223,67 @@ end)
 
 local ToggleCake = Tabs.Main:AddToggle("ToggleCake", {
     Title = "Auto Farm Cake Prince",
-    Description = "(vip)",
-    Default = false
-})
-
+    Description = "", 
+    Default = false })
 ToggleCake:OnChanged(function(Value)
-    _G.CakePrince = Value
-    if Value == false then
-        wait()
-        Tween(game:GetService("Players").LocalPlayer.Character.HumanoidRootPart.CFrame)
-        wait()
-    end
-end)
-
-Options.ToggleCake:SetValue(false)
-
--- Function to teleport around the target position with random offsets
-local function TeleportAround(targetCFrame)
-    local directions = {
-        Vector3.new(-30, 0, 0),  -- left
-        Vector3.new(30, 0, 0),   -- right
-        Vector3.new(0, 0, -30),  -- behind
-        Vector3.new(0, 30, 0),   -- above
-        Vector3.new(0, -30, 0),  -- below
-        Vector3.new(0, 0, 30)    -- in front
-    }
-    
-    local randomDirection = directions[math.random(1, #directions)]
-    local teleportPosition = targetCFrame.Position + randomDirection
-    Tween(CFrame.new(teleportPosition))
-    wait(1)  -- Delay for 1 second between teleports
+ _G.CakePrince = Value
+ if Value == false then
+    wait()
+    Tween(game:GetService("Players").LocalPlayer.Character.HumanoidRootPart.CFrame)
+    wait()
 end
-
-spawn(function()
-    while wait() do
-        if _G.CakePrince then
-            pcall(function()
-                local CakeCFrame = CFrame.new(-2142.66821, 71.2588654, -12327.4619, 0.996939838, -4.33107843e-08, 0.078172572, 4.20252917e-08, 1, 1.80894251e-08, -0.078172572, -1.47488439e-08, 0.996939838)
-                toTarget(CakeCFrame)
-                
-                if game:GetService("Workspace").Enemies:FindFirstChild("Cake Prince") then
-                    local cakePrince = game:GetService("Workspace").Enemies:FindFirstChild("Cake Prince")
-                    if cakePrince then
-                        repeat
-                            wait(_G.Fast_Delay)
-                            AttackNoCoolDown()
-                            AutoHaki()
-                            EquipTool(SelectWeapon)
-                            cakePrince.HumanoidRootPart.Size = Vector3.new(60, 60, 60)
-                            cakePrince.HumanoidRootPart.CanCollide = false
-                            TeleportAround(cakePrince.HumanoidRootPart.CFrame)  -- Teleport around Cake Prince
-                            -- Click or other actions can be added here if needed
-                        until not _G.CakePrince or cakePrince.Humanoid.Health <= 0 or not cakePrince.Parent
-                    end
-                else
-                    -- Handle other enemies if Cake Prince is not found
-                    local otherEnemies = {"Baking Staff", "Head Baker", "Cake Guard", "Cookie Crafter"}
-                    local foundEnemy = false
-                    for _, enemyName in pairs(otherEnemies) do
-                        local enemy = game:GetService("Workspace").Enemies:FindFirstChild(enemyName)
-                        if enemy and enemy.Humanoid.Health > 0 then
-                            foundEnemy = true
-                            repeat
-                                wait(_G.Fast_Delay)
-                                AttackNoCoolDown()
-                                AutoHaki()
-                                EquipTool(SelectWeapon)
-                                enemy.HumanoidRootPart.Size = Vector3.new(60, 60, 60)
-                                FarmPos = enemy.HumanoidRootPart.CFrame
-                                MonFarm = enemy.Name
-                                Tween(enemy.HumanoidRootPart.CFrame * CFrame.new(posX, posY, posZ))
-                            until not _G.CakePrince or not enemy.Parent or enemy.Humanoid.Health <= 0
-                        end
-                    end
-
-                    if not foundEnemy then
-                        Tween(CakeCFrame)
-                    end
-                end
-            end)
-        end
-    end
 end)
+Options.ToggleCake:SetValue(false)
+spawn(function()
+		while wait() do
+			if _G.CakePrince then
+                pcall(function()
+                    local CakeCFrame = CFrame.new(-2142.66821,71.2588654,-12327.4619,0.996939838,-4.33107843e-08,0.078172572,4.20252917e-08,1,1.80894251e-08,-0.078172572,-1.47488439e-08, 0.996939838)
+                    toTarget(CakeCFrame)
+					if game.ReplicatedStorage:FindFirstChild("Cake Prince") or game:GetService("Workspace").Enemies:FindFirstChild("Cake Prince") then   
+						if game:GetService("Workspace").Enemies:FindFirstChild("Cake Prince") then
+							for i,v in pairs(game:GetService("Workspace").Enemies:GetChildren()) do 
+								if v.Name == "Cake Prince" then
+                                    repeat wait(_G.Fast_Delay)
+                                        AttackNoCoolDown()
+										AutoHaki()
+										EquipTool(SelectWeapon)
+										v.HumanoidRootPart.Size = Vector3.new(60, 60, 60)
+										v.HumanoidRootPart.CanCollide = false
+										Tween(v.HumanoidRootPart.CFrame * Pos)
+										--Click
+									until _G.CakePrince == false or not v.Parent or v.Humanoid.Health <= 0
+                                    bringmob = false
+                                end    
+							end    
+						else
+							Tween(CFrame.new(-2009.2802734375, 4532.97216796875, -14937.3076171875)) 
+						end
+					else
+                        if game.Workspace.Enemies:FindFirstChild("Baking Staff") or game.Workspace.Enemies:FindFirstChild("Head Baker") or game.Workspace.Enemies:FindFirstChild("Cake Guard") or game.Workspace.Enemies:FindFirstChild("Cookie Crafter")  then
+                            for i,v in pairs(game:GetService("Workspace").Enemies:GetChildren()) do  
+                                if (v.Name == "Baking Staff" or v.Name == "Head Baker" or v.Name == "Cake Guard" or v.Name == "Cookie Crafter") and v.Humanoid.Health > 0 then
+                                    repeat wait(_G.Fast_Delay)
+                                        AttackNoCoolDown()
+										AutoHaki()
+                                        bringmob = true
+										EquipTool(SelectWeapon)
+										v.HumanoidRootPart.Size = Vector3.new(60, 60, 60)  
+										FarmPos = v.HumanoidRootPart.CFrame
+                                        MonFarm = v.Name
+										Tween(v.HumanoidRootPart.CFrame * CFrame.new(posX,posY,posZ))
+									until _G.CakePrince == false or game:GetService("ReplicatedStorage"):FindFirstChild("Cake Prince") or not v.Parent or v.Humanoid.Health <= 0
+                                    bringmob = false
+                                end
+							end
+						else
+							Tween(CakeCFrame)
+						end
+					end
+				end)
+			end
+		end
+    end)
 
 
 
