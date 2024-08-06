@@ -3099,6 +3099,14 @@ local ToggleBone = Tabs.Main:AddToggle("ToggleBone", {
 
 ToggleBone:OnChanged(function(Value)
     _G.AutoBone = Value
+    if not Value then
+        _G.StopAutoBone = true  -- Flag to stop the auto-farming loop
+        wait()
+        Tween(game:GetService("Players").LocalPlayer.Character.HumanoidRootPart.CFrame)
+        wait()
+    else
+        _G.StopAutoBone = false -- Reset flag to allow the auto-farming loop to run
+    end
 end)
 
 Options.ToggleBone:SetValue(false)
@@ -3106,33 +3114,36 @@ Options.ToggleBone:SetValue(false)
 local BoneCFrame = CFrame.new(-9515.75, 174.852, 6079.406)
 local BoneCFrame2 = CFrame.new(-9359.453, 141.327, 5446.82)
 
--- Function to teleport to positions around the enemy with a delay
+-- Function to teleport to positions around the enemy at a distance of 20 units
 local function TeleportAroundEnemy(enemyCFrame)
     local directions = {
-        Vector3.new(-25, 0, 0),
-        Vector3.new(25, 0, 0),
-        Vector3.new(0, 0, -25),
-        Vector3.new(0, 25, 0),
-        Vector3.new(0, -25, 0),
-        Vector3.new(0, 0, 25)
+        Vector3.new(-20, 0, 0),  -- left
+        Vector3.new(20, 0, 0),   -- right
+        Vector3.new(0, 0, -20),  -- behind
+        Vector3.new(0, 20, 0),   -- above
+        Vector3.new(0, -20, 0),  -- below
+        Vector3.new(0, 0, 20)    -- in front
     }
-
+    
     local randomDirection = directions[math.random(1, #directions)]
     local teleportPosition = enemyCFrame.Position + randomDirection
-
-    wait(math.random(1, 2))  -- Delay between teleports
     Tween(CFrame.new(teleportPosition))
 end
 
--- Main loop for auto farming
 spawn(function()
-    while wait(0.5) do  -- Adjusted wait time for performance
+    while wait() do
         if _G.AutoBone then
             pcall(function()
                 local player = game:GetService("Players").LocalPlayer
                 local questGui = player.PlayerGui.Main.Quest
                 local questTitle = questGui.Container.QuestTitle.Title.Text
                 
+                -- Check if AutoBone was turned off
+                if _G.StopAutoBone then
+                    _G.StopAutoBone = false -- Reset the flag
+                    break -- Exit the loop to stop teleporting and attacking
+                end
+
                 if not string.find(questTitle, "Demonic Soul") then
                     game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("AbandonQuest")
                 end
@@ -3142,17 +3153,23 @@ spawn(function()
                     if (BoneCFrame.Position - player.Character.HumanoidRootPart.Position).Magnitude <= 3 then    
                         game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("StartQuest", "HauntedQuest2", 1)
                     end
+
                 elseif questGui.Visible then
                     local enemies = game:GetService("Workspace").Enemies:GetChildren()
                     for _, enemy in pairs(enemies) do
                         if enemy:FindFirstChild("HumanoidRootPart") and enemy:FindFirstChild("Humanoid") and enemy.Humanoid.Health > 0 then
                             if enemy.Name == "Reborn Skeleton" or enemy.Name == "Living Zombie" or enemy.Name == "Demonic Soul" or enemy.Name == "Posessed Mummy" then
                                 if string.find(questTitle, "Demonic Soul") then
-                                    repeat wait(_G.Fast_Delay)
+                                    repeat wait(1)  -- Reduced teleport time to 1 second
+                                        -- Check again if AutoBone was turned off during the attack loop
+                                        if not _G.AutoBone then break end
+
                                         AttackNoCoolDown()
                                         AutoHaki()
                                         bringmob = true
                                         EquipTool(SelectWeapon)
+
+                                        -- Dynamic teleportation around the enemy with 20-unit distance
                                         TeleportAroundEnemy(enemy.HumanoidRootPart.CFrame)
                                         enemy.HumanoidRootPart.Size = Vector3.new(60, 60, 60)
                                         enemy.HumanoidRootPart.Transparency = 1
@@ -3174,6 +3191,7 @@ spawn(function()
         end
     end
 end)
+
 
 
 
@@ -7599,11 +7617,11 @@ end
 
 Tabs.profile:AddParagraph({
         Title = "Owner",
-        Content = "by Kai Wibu"
+        Content = "Siesta"
     })
   
 Tabs.profile:AddParagraph({
-        Title = "link Discord ZINER HUB",
+        Title = "link Discord Shiny Hub",
         Content = "https://discord.gg/Y8vrbPyPyR"
     })      
 --------------------------------------------------------------------------------------------------------------------------------------------
