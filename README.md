@@ -3093,17 +3093,12 @@ local StatusBone = Tabs.Main:AddParagraph({
 
 local ToggleBone = Tabs.Main:AddToggle("ToggleBone", {
     Title = "Auto farm Bone (VIP)",
-    Description = "Super Smooth",
+    Description = "Efficient Bone Farming with Smooth Operation",
     Default = false
 })
 
 ToggleBone:OnChanged(function(Value)
     _G.AutoBone = Value
-    if not Value then
-        wait()
-        Tween(game:GetService("Players").LocalPlayer.Character.HumanoidRootPart.CFrame)
-        wait()
-    end
 end)
 
 Options.ToggleBone:SetValue(false)
@@ -3111,27 +3106,27 @@ Options.ToggleBone:SetValue(false)
 local BoneCFrame = CFrame.new(-9515.75, 174.852, 6079.406)
 local BoneCFrame2 = CFrame.new(-9359.453, 141.327, 5446.82)
 
--- Function to teleport to positions around the enemy at a distance of 40 units with delay
+-- Function to teleport to positions around the enemy with a delay
 local function TeleportAroundEnemy(enemyCFrame)
     local directions = {
-        Vector3.new(-40, 0, 0),  -- left
-        Vector3.new(40, 0, 0),   -- right
-        Vector3.new(0, 0, -40),  -- behind
-        Vector3.new(0, 40, 0),   -- above
-        Vector3.new(0, -40, 0),  -- below
-        Vector3.new(0, 0, 40)    -- in front
+        Vector3.new(-40, 0, 0),
+        Vector3.new(40, 0, 0),
+        Vector3.new(0, 0, -40),
+        Vector3.new(0, 40, 0),
+        Vector3.new(0, -40, 0),
+        Vector3.new(0, 0, 40)
     }
-    
+
     local randomDirection = directions[math.random(1, #directions)]
     local teleportPosition = enemyCFrame.Position + randomDirection
 
-    -- Add a delay before teleporting
-    wait(math.random(1, 1.5))  -- Delay between 1 to 2 seconds
+    wait(math.random(1, 2))  -- Delay between teleports
     Tween(CFrame.new(teleportPosition))
 end
 
+-- Main loop for auto farming
 spawn(function()
-    while wait() do
+    while wait(0.5) do  -- Adjusted wait time for performance
         if _G.AutoBone then
             pcall(function()
                 local player = game:GetService("Players").LocalPlayer
@@ -3147,7 +3142,6 @@ spawn(function()
                     if (BoneCFrame.Position - player.Character.HumanoidRootPart.Position).Magnitude <= 3 then    
                         game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("StartQuest", "HauntedQuest2", 1)
                     end
-
                 elseif questGui.Visible then
                     local enemies = game:GetService("Workspace").Enemies:GetChildren()
                     for _, enemy in pairs(enemies) do
@@ -3159,8 +3153,6 @@ spawn(function()
                                         AutoHaki()
                                         bringmob = true
                                         EquipTool(SelectWeapon)
-
-                                        -- Dynamic teleportation around the enemy with 40-unit distance and delay
                                         TeleportAroundEnemy(enemy.HumanoidRootPart.CFrame)
                                         enemy.HumanoidRootPart.Size = Vector3.new(60, 60, 60)
                                         enemy.HumanoidRootPart.Transparency = 1
@@ -3182,6 +3174,7 @@ spawn(function()
         end
     end
 end)
+
 
 
 local ToggleRandomBone = Tabs.Main:AddToggle("ToggleRandomBone", {Title = "Auto Random Bone",Description = "", Default = false })
@@ -4863,44 +4856,37 @@ local y = debug.getupvalues(CombatFrameworkR)[2]
 local function UpdateCombatProperties()
     if typeof(y) == "table" then
         pcall(function()
-            -- Stop camera shaking for smooth attack
-            CameraShaker:Stop()
-            
-            -- Modify combat properties for faster attack
-            y.activeController.timeToNextAttack = 0.1  -- Small delay for instant attack feel
-            y.activeController.hitboxMagnitude = 60  -- Large hitbox range
-            y.activeController.active = true  -- Enable combat
-            y.activeController.timeToNextBlock = 0  -- Instant block
-            y.activeController.focusStart = tick()  -- Current time
-            y.activeController.increment = 1  -- Increment for smooth attacks
-            y.activeController.blocking = false  -- Disable blocking
-            y.activeController.attacking = true  -- Enable attacking
-            y.activeController.humanoid.AutoRotate = true  -- Auto rotate for accuracy
+            CameraShaker:Stop()  -- Stop camera shake for smoothness
+
+            -- Adjust combat properties
+            y.activeController.timeToNextAttack = 0.1
+            y.activeController.hitboxMagnitude = 60
+            y.activeController.active = true
+            y.activeController.timeToNextBlock = 0
+            y.activeController.focusStart = tick()
+            y.activeController.increment = 1
+            y.activeController.blocking = false
+            y.activeController.attacking = true
+            y.activeController.humanoid.AutoRotate = true
         end)
     end
 end
 
--- Update combat properties on every render step
-spawn(function()
-    while wait(0.1) do  -- Adjusted the wait time for responsiveness
-        if _G.FastNe then
-            UpdateCombatProperties()
-        end
-    end
-end)
-
--- Ensure the attack is triggered properly
+-- Update combat properties and trigger attack
 spawn(function()
     while wait(0.1) do
         if _G.FastNe then
             pcall(function()
+                UpdateCombatProperties()
                 if y.activeController then
-                    y.activeController:Attack()  -- Trigger attack
+                    -- Trigger attack action
+                    y.activeController:Attack()
                 end
             end)
         end
     end
 end)
+
 
 
  
