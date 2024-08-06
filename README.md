@@ -27,8 +27,8 @@ local SaveManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/T
 local InterfaceManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/Tienvn123tkvn/Test/main/ZierhubfaceManager.lua"))()
 ----------------------------------------------------------------------------------------------------------------------------------------------
 local Window = Fluent:CreateWindow({
-    Title = "Shiny Hub",
-    SubTitle = "ZZ",
+    Title = "ZINER HUB",
+    SubTitle = "Kai Wibu",
     TabWidth = 160,
     Size = UDim2.fromOffset(500, 320),
     Acrylic = true,
@@ -2119,7 +2119,7 @@ end
                     wait(.1)
                     Com("F_", "SetSpawnPoint")
                 end
-                wait(0.1)
+                wait(0.2)
 
                 return
             end)
@@ -2565,13 +2565,9 @@ local listfastattack = {'Normal','Slow','Super','Low'}
     DropdownDelayAttack:SetValue("Fast Attack")
     DropdownDelayAttack:OnChanged(function(Value)
     _G.FastAttackZINER_Mode = Value
-	if _G.FastAttackWinterhub_Mode == "Slow" then
-		_G.Fast_Delay = 0.12
-	elseif _G.FastAttackWinterhub_Mode == "Normal" then
+	if _G.FastAttackWinterhub_Mode == "Normal" then
 		_G.Fast_Delay = 0.9
 	elseif _G.FastAttackWinterhub_Mode == "Super" then
-		_G.Fast_Delay = 0.5
-	elseif _G.FastAttackWinterhub_Mode == "Low" then
 		_G.Fast_Delay = 0
 	 end
  end)
@@ -3097,7 +3093,7 @@ local StatusBone = Tabs.Main:AddParagraph({
 
 local ToggleBone = Tabs.Main:AddToggle("ToggleBone", {
     Title = "Auto farm Bone (VIP)",
-    Description = "Efficient Bone Farming with Smooth Operation",
+    Description = "Super Smooth",
     Default = false
 })
 
@@ -3115,7 +3111,7 @@ Options.ToggleBone:SetValue(false)
 local BoneCFrame = CFrame.new(-9515.75, 174.852, 6079.406)
 local BoneCFrame2 = CFrame.new(-9359.453, 141.327, 5446.82)
 
--- Function to teleport to positions around the enemy at a distance of 40 units
+-- Function to teleport to positions around the enemy at a distance of 40 units with delay
 local function TeleportAroundEnemy(enemyCFrame)
     local directions = {
         Vector3.new(-40, 0, 0),  -- left
@@ -3128,6 +3124,9 @@ local function TeleportAroundEnemy(enemyCFrame)
     
     local randomDirection = directions[math.random(1, #directions)]
     local teleportPosition = enemyCFrame.Position + randomDirection
+
+    -- Add a delay before teleporting
+    wait(math.random(1, 2))  -- Delay between 1 to 2 seconds
     Tween(CFrame.new(teleportPosition))
 end
 
@@ -3161,7 +3160,7 @@ spawn(function()
                                         bringmob = true
                                         EquipTool(SelectWeapon)
 
-                                        -- Dynamic teleportation around the enemy with 40-unit distance
+                                        -- Dynamic teleportation around the enemy with 40-unit distance and delay
                                         TeleportAroundEnemy(enemy.HumanoidRootPart.CFrame)
                                         enemy.HumanoidRootPart.Size = Vector3.new(60, 60, 60)
                                         enemy.HumanoidRootPart.Transparency = 1
@@ -3183,7 +3182,6 @@ spawn(function()
         end
     end
 end)
-
 
 
 local ToggleRandomBone = Tabs.Main:AddToggle("ToggleRandomBone", {Title = "Auto Random Bone",Description = "", Default = false })
@@ -4845,82 +4843,113 @@ end
 --Setting
 local SettingFarm = Tabs.Setting:AddSection("Farming")
 
-local ToggleFast = Tabs.Setting:AddToggle("ToggleFast", {Title = "Enabled Fast Attack",Description = "", Default = true })
+local ToggleFast = Tabs.Setting:AddToggle("ToggleFast", {
+    Title = "Enabled Fast Attack",
+    Description = "Activate faster and smoother attack mechanics.",
+    Default = true
+})
+
 ToggleFast:OnChanged(function(Value)
     _G.FastNe = Value
 end)
+
 Options.ToggleFast:SetValue(true)
 
 local CameraShaker = require(game.ReplicatedStorage.Util.CameraShaker)
-CombatFrameworkR = require(game:GetService("Players").LocalPlayer.PlayerScripts.CombatFramework)
-y = debug.getupvalues(CombatFrameworkR)[2]
+local CombatFrameworkR = require(game:GetService("Players").LocalPlayer.PlayerScripts.CombatFramework)
+local y = debug.getupvalues(CombatFrameworkR)[2]
+
+-- Function to update combat properties for faster attacks
+local function UpdateCombatProperties()
+    if typeof(y) == "table" then
+        pcall(function()
+            -- Stop camera shaking for smooth attack
+            CameraShaker:Stop()
+            
+            -- Modify combat properties for faster attack
+            y.activeController.timeToNextAttack = 0  -- Instant attack
+            y.activeController.hitboxMagnitude = 60  -- Large hitbox range
+            y.activeController.active = true  -- Enable combat
+            y.activeController.timeToNextBlock = 0  -- Instant block
+            y.activeController.focusStart = tick()  -- Current time
+            y.activeController.increment = 1  -- Increment for smooth attacks
+            y.activeController.blocking = false  -- Disable blocking
+            y.activeController.attacking = true  -- Enable attacking
+            y.activeController.humanoid.AutoRotate = true  -- Auto rotate for accuracy
+        end)
+    end
+end
+
+-- Update combat properties on every render step
 spawn(function()
     game:GetService("RunService").RenderStepped:Connect(function()
         if _G.FastNe then
-            if typeof(y) == "table" then
-                pcall(function()
-                    CameraShaker:Stop()
-                    y.activeController.timeToNextAttack = (math.huge^math.huge^math.huge)
-                    y.activeController.timeToNextAttack = 0
-                    y.activeController.hitboxMagnitude = 60
-                    y.activeController.active = false
-                    y.activeController.timeToNextBlock = 0
-                    y.activeController.focusStart = 1655503339.0980349
-                    y.activeController.increment = 1
-                    y.activeController.blocking = false
-                    y.activeController.attacking = false
-                    y.activeController.humanoid.AutoRotate = true
-                end)
-            end
+            UpdateCombatProperties()
         end
     end)
-end) 
+end)
+
  
-    local ToggleBringMob = Tabs.Setting:AddToggle("ToggleBringMob", {Title = "Enabled Bring Mob",Description = "fix gom quái", Default = true })
-   ToggleBringMob:OnChanged(function(Value)
-        _G.BringMob = Value
-    end)
-    Options.ToggleBringMob:SetValue(true)
-    spawn(function()
-        while wait() do
-            pcall(function()
-                for i,v in pairs(game:GetService("Workspace").Enemies:GetChildren()) do
-                    if _G.BringMob and bringmob then
-                        if v.Name == MonFarm and v:FindFirstChild("Humanoid") and v.Humanoid.Health > 0 then
-                            if v.Name == "Factory Staff" then
-                                if (v.HumanoidRootPart.Position - FarmPos.Position).Magnitude <= 500 then
-                                    v.Head.CanCollide = false
-                                    v.HumanoidRootPart.CanCollide = false
-                                    v.HumanoidRootPart.Size = Vector3.new(60, 60, 60)
-                                    v.HumanoidRootPart.CFrame = FarmPos
-                                    if v.Humanoid:FindFirstChild("Animator") then
-                                        v.Humanoid.Animator:Destroy()
-                                    end
-                                    sethiddenproperty(game.Players.LocalPlayer, "SimulationRadius", math.huge)
-                                end
-                            elseif v.Name == MonFarm then
-                                if (v.HumanoidRootPart.Position - FarmPos.Position).Magnitude <= 337.5 then
-                                    v.HumanoidRootPart.CFrame = FarmPos
-                                    v.HumanoidRootPart.Size = Vector3.new(60,60,60)
-                                    v.HumanoidRootPart.Transparency = 1
-                                    v.Humanoid.JumpPower = 0
-                                    v.Humanoid.WalkSpeed = 0
-                                    if v.Humanoid:FindFirstChild("Animator") then
-                                        v.Humanoid.Animator:Destroy()
-                                    end
-                                    v.HumanoidRootPart.CanCollide = false
-                                    v.Head.CanCollide = false
-                                    v.Humanoid:ChangeState(11)
-                                    v.Humanoid:ChangeState(14)
-                                    sethiddenproperty(game.Players.LocalPlayer, "SimulationRadius", math.huge)
-                                end
-                            end
-                        end
-                                end
-                            end
-                        end)
+local ToggleBringMob = Tabs.Setting:AddToggle("ToggleBringMob", {
+    Title = "Enabled Bring Mob",
+    Description = "Fixes mob positioning.",
+    Default = true
+})
+
+ToggleBringMob:OnChanged(function(Value)
+    _G.BringMob = Value
+end)
+
+Options.ToggleBringMob:SetValue(true)
+
+-- Function to handle mob positioning and adjustments
+local function HandleMob(v, FarmPos)
+    if v:FindFirstChild("HumanoidRootPart") and v:FindFirstChild("Humanoid") then
+        local distance = (v.HumanoidRootPart.Position - FarmPos.Position).Magnitude
+
+        if v.Name == "Factory Staff" and distance <= 500 then
+            -- Adjust properties for Factory Staff
+            v.Head.CanCollide = false
+            v.HumanoidRootPart.CanCollide = false
+            v.HumanoidRootPart.Size = Vector3.new(60, 60, 60)
+            v.HumanoidRootPart.CFrame = FarmPos
+            if v.Humanoid:FindFirstChild("Animator") then
+                v.Humanoid.Animator:Destroy()
+            end
+            sethiddenproperty(game.Players.LocalPlayer, "SimulationRadius", math.huge)
+
+        elseif v.Name == MonFarm and distance <= 337.5 then
+            -- Adjust properties for MonFarm mobs
+            v.HumanoidRootPart.CFrame = FarmPos
+            v.HumanoidRootPart.Size = Vector3.new(60, 60, 60)
+            v.HumanoidRootPart.Transparency = 1
+            v.Humanoid.JumpPower = 0
+            v.Humanoid.WalkSpeed = 0
+            if v.Humanoid:FindFirstChild("Animator") then
+                v.Humanoid.Animator:Destroy()
+            end
+            v.HumanoidRootPart.CanCollide = false
+            v.Head.CanCollide = false
+            v.Humanoid:ChangeState(Enum.HumanoidStateType.Physics)
+            v.Humanoid:ChangeState(Enum.HumanoidStateType.Seated)
+            sethiddenproperty(game.Players.LocalPlayer, "SimulationRadius", math.huge)
+        end
+    end
+end
+
+-- Main loop to continuously check and bring mobs
+spawn(function()
+    while wait(0.5) do  -- Adjusted the wait time for performance
+        pcall(function()
+            if _G.BringMob then
+                for _, v in pairs(game:GetService("Workspace").Enemies:GetChildren()) do
+                    HandleMob(v, FarmPos)
                 end
-            end)
+            end
+        end)
+    end
+end)
+
 
          
     local ToggleBypassTP = Tabs.Setting:AddToggle("ToggleBypassTP", {Title = "Enabled Bypass Tp",Description = "", Default = false })
@@ -7973,3 +8002,9 @@ spawn(function()
 end)
 end
 ----------------------------------------------------------------------------------------------------------------------------------------------
+Fluent:Notify({
+    Title = "ZINER HUB",
+    Content = "Helllo you",
+    Durtion = 3
+})
+warn("Cảm ơn bạn đã sử dụng hack")
