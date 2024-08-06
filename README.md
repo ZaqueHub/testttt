@@ -3109,12 +3109,12 @@ local BoneCFrame2 = CFrame.new(-9359.453, 141.327, 5446.82)
 -- Function to teleport to positions around the enemy with a delay
 local function TeleportAroundEnemy(enemyCFrame)
     local directions = {
-        Vector3.new(-30, 0, 0),
-        Vector3.new(30, 0, 0),
-        Vector3.new(0, 0, -30),
-        Vector3.new(0, 30, 0),
-        Vector3.new(0, -30, 0),
-        Vector3.new(0, 0, 30)
+        Vector3.new(-25, 0, 0),
+        Vector3.new(25, 0, 0),
+        Vector3.new(0, 0, -25),
+        Vector3.new(0, 25, 0),
+        Vector3.new(0, -25, 0),
+        Vector3.new(0, 0, 25)
     }
 
     local randomDirection = directions[math.random(1, #directions)]
@@ -4197,105 +4197,92 @@ if Third_Sea then
     local Sea = Tabs.Sea:AddSection("Sea Beast")
 
 
-local ToggleSeaBeAst = Tabs.Sea:AddToggle("ToggleSeaBeAst", {Title = "Auto kill Sea Beast", Description = "", Default = false })
+local ToggleSeaBeAst = Tabs.Sea:AddToggle("ToggleSeaBeAst", {Title = "Auto Kill Sea Beast", Description = "", Default = false })
 
 ToggleSeaBeAst:OnChanged(function(Value)
     _G.AutoSeaBeast = Value
-    _G.AutoW = Value -- Automatically enable boat movement when auto-sea beast is enabled
 end)
+
 Options.ToggleSeaBeAst:SetValue(false)
 
-local function TeleportCharacterToSea()
-    -- Coordinates for a location in the sea
-    local seaPosition = CFrame.new(-4513.90087890625, 16.76398277282715, -2658.820556640625)
-    local player = game.Players.LocalPlayer
-    local character = player.Character or player.CharacterAdded:Wait()
-
-    -- Teleport character to the sea
-    character.HumanoidRootPart.CFrame = seaPosition
-end
-
-local function TeleportBoatToPlayer()
-    local player = game.Players.LocalPlayer
-    local character = player.Character or player.CharacterAdded:Wait()
-    local seaPosition = CFrame.new(-4513.90087890625, 16.76398277282715, -2658.820556640625)
-
-    -- Check if the boat exists
-    local boat = game:GetService("Workspace").Boats:FindFirstChild("PirateGrandBrigade")
-    if boat then
-        -- Teleport boat to the player
-        boat:SetPrimaryPartCFrame(character.HumanoidRootPart.CFrame)
-    end
-end
-
-spawn(function()
-    while wait(1) do -- Check every second
-        if _G.AutoW then
-            TeleportCharacterToSea()
-            wait(2) -- Give some time for teleporting the character to the sea
-            TeleportBoatToPlayer()
-        end
-    end
-end)
+-- Variables to control skills
+Skillz, Skillx, Skillc, Skillv = true, true, true, true
 
 spawn(function()
     while wait() do
         pcall(function()
             if _G.AutoSeaBeast then
-                -- Handling automatic skill usage
-                if Skillz then SendKey("Z", true) wait(0.1) SendKey("Z", false) end
-                if Skillx then SendKey("X", true) wait(0.1) SendKey("X", false) end
-                if Skillc then SendKey("C", true) wait(0.1) SendKey("C", false) end
-                if Skillv then SendKey("V", true) wait(0.1) SendKey("V", false) end
+                -- Handle skill usage
+                if Skillz then
+                    game:service('VirtualInputManager'):SendKeyEvent(true, "Z", false, game)
+                    wait(.1)
+                    game:service('VirtualInputManager'):SendKeyEvent(false, "Z", false, game)
+                end
+                if Skillx then
+                    game:service('VirtualInputManager'):SendKeyEvent(true, "X", false, game)
+                    wait(.1)
+                    game:service('VirtualInputManager'):SendKeyEvent(false, "X", false, game)
+                end
+                if Skillc then
+                    game:service('VirtualInputManager'):SendKeyEvent(true, "C", false, game)
+                    wait(.1)
+                    game:service('VirtualInputManager'):SendKeyEvent(false, "C", false, game)
+                end
+                if Skillv then
+                    game:service('VirtualInputManager'):SendKeyEvent(true, "V", false, game)
+                    wait(.1)
+                    game:service('VirtualInputManager'):SendKeyEvent(false, "V", false, game)
+                end
+            end
+        end)
+    end
+end)
 
-                -- Sea Beast Logic
-                if not game:GetService("Workspace").SeaBeasts:FindFirstChild("SeaBeast1") then
-                    -- Boat handling and purchasing logic
-                    if not game:GetService("Workspace").Boats:FindFirstChild("PirateGrandBrigade") then 
-                        if not game:GetService("Workspace").Boats:FindFirstChild("PirateBasic") then
-                            buyb = TweenBoat(CFrame.new(-4513.90087890625, 16.76398277282715, -2658.820556640625))
-                            if (CFrame.new(-4513.90087890625, 16.76398277282715, -2658.820556640625).Position - game.Players.LocalPlayer.Character.HumanoidRootPart.Position).magnitude <= 10 then
-                                if buyb then buyb:Stop() end
+task.spawn(function()
+    while wait() do
+        pcall(function()
+            if _G.AutoSeaBeast then
+                local player = game.Players.LocalPlayer
+                local character = player.Character
+                local humanoid = character:WaitForChild("Humanoid")
+                
+                -- Stop teleporting and auto-pressing W when seated
+                if humanoid.Sit then
+                    game:GetService("VirtualInputManager"):SendKeyEvent(false, "W", false, game)
+                else
+                    -- Handle boat-related actions and sea beast detection
+                    if not game:GetService("Workspace").SeaBeasts:FindFirstChild("SeaBeast1") then
+                        if not game:GetService("Workspace").Boats:FindFirstChild("PirateGrandBrigade") then 
+                            TweenBoat(CFrame.new(-4513.90087890625, 16.76398277282715, -2658.820556640625))
+                            if (CFrame.new(-4513.90087890625, 16.76398277282715, -2658.820556640625).Position - character.HumanoidRootPart.Position).magnitude <= 10 then
                                 local args = {
                                     [1] = "BuyBoat",
                                     [2] = "PirateGrandBrigade"
                                 }
                                 game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer(unpack(args))
                             end
-                        elseif game:GetService("Workspace").Boats:FindFirstChild("PirateGrandBrigade") then
-                            if game.Players.LocalPlayer.Character:WaitForChild("Humanoid").Sit == false then
-                                TweenBoat(game:GetService("Workspace").Boats.PirateGrandBrigade.VehicleSeat.CFrame * CFrame.new(0,1,0))
-                            elseif game.Players.LocalPlayer.Character:WaitForChild("Humanoid").Sit == true then
-                                repeat wait(_G.Fast_Delay)
-                                    if (game:GetService("Workspace").Boats.PirateGrandBrigade.VehicleSeat.CFrame.Position - game.Players.LocalPlayer.Character.HumanoidRootPart.Position).magnitude <= 10 then
-                                        TweenShip(CFrame.new(35.04552459716797, 17.750778198242188, 4819.267578125))
+                        else
+                            for _, boat in pairs(game:GetService("Workspace").Boats:GetChildren()) do
+                                if boat.Name == "PirateGrandBrigade" and boat:FindFirstChild("VehicleSeat") then
+                                    TweenBoat(boat.VehicleSeat.CFrame * CFrame.new(0, 1, 0))
+                                    if (boat.VehicleSeat.CFrame.Position - character.HumanoidRootPart.Position).magnitude <= 10 then
+                                        humanoid.Sit = true
                                     end
-                                until game:GetService("Workspace").SeaBeasts:FindFirstChild("SeaBeast1") or _G.AutoSeaBeast == false
-                            end
-                        end
-                    elseif game:GetService("Workspace").Boats:FindFirstChild("PirateGrandBrigade") then
-                        for is,vs in pairs(game:GetService("Workspace").Boats:GetChildren()) do
-                            if vs.Name == "PirateGrandBrigade" then
-                                if vs:FindFirstChild("VehicleSeat") then
-                                    repeat wait(_G.Fast_Delay)
-                                        game.Players.LocalPlayer.Character:WaitForChild("Humanoid").Sit = false
-                                        TweenBoat(vs.VehicleSeat.CFrame * CFrame.new(0,1,0))
-                                    until not game:GetService("Workspace").Boats:FindFirstChild("PirateGrandBrigade") or _G.AutoSeaBeast == false
                                 end
                             end
                         end
-                    end
-                elseif game:GetService("Workspace").SeaBeasts:FindFirstChild("SeaBeast1") then  
-                    for i,v in pairs(game:GetService("Workspace").SeaBeasts:GetChildren()) do
-                        if v:FindFirstChild("HumanoidRootPart") then
-                            repeat wait(_G.Fast_Delay)
-                                game.Players.LocalPlayer.Character:WaitForChild("Humanoid").Sit = false
-                                TweenBoat(v.HumanoidRootPart.CFrame * CFrame.new(0,500,0))
-                                EquipAllWeapon()  
+                    else
+                        local seaBeast = game:GetService("Workspace").SeaBeasts:FindFirstChild("SeaBeast1")
+                        if seaBeast and seaBeast:FindFirstChild("HumanoidRootPart") then
+                            repeat
+                                wait(_G.Fast_Delay)
+                                character.Humanoid.Sit = false
+                                TweenBoat(seaBeast.HumanoidRootPart.CFrame * CFrame.new(0, 500, 0))
+                                EquipAllWeapon()
                                 AutoSkill = true
-                                AimBotSkillPosition = v.HumanoidRootPart
+                                AimBotSkillPosition = seaBeast.HumanoidRootPart
                                 Skillaimbot = true
-                            until not v:FindFirstChild("HumanoidRootPart") or _G.AutoSeaBeast == false
+                            until not seaBeast:FindFirstChild("HumanoidRootPart") or not _G.AutoSeaBeast
                             AutoSkill = false
                             Skillaimbot = false
                         end
@@ -4303,8 +4290,8 @@ spawn(function()
                 end
             end
         end)
-    end
-end)
+    
+
 
 
 
@@ -7950,9 +7937,3 @@ spawn(function()
 end)
 end
 ----------------------------------------------------------------------------------------------------------------------------------------------
-Fluent:Notify({
-    Title = "ZINER HUB",
-    Content = "Helllo you",
-    Durtion = 3
-})
-warn("Cảm ơn bạn đã sử dụng hack")
