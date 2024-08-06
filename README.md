@@ -3109,12 +3109,12 @@ local BoneCFrame2 = CFrame.new(-9359.453, 141.327, 5446.82)
 -- Function to teleport to positions around the enemy with a delay
 local function TeleportAroundEnemy(enemyCFrame)
     local directions = {
-        Vector3.new(-40, 0, 0),
-        Vector3.new(40, 0, 0),
-        Vector3.new(0, 0, -40),
-        Vector3.new(0, 40, 0),
-        Vector3.new(0, -40, 0),
-        Vector3.new(0, 0, 40)
+        Vector3.new(-30, 0, 0),
+        Vector3.new(30, 0, 0),
+        Vector3.new(0, 0, -30),
+        Vector3.new(0, 30, 0),
+        Vector3.new(0, -30, 0),
+        Vector3.new(0, 0, 30)
     }
 
     local randomDirection = directions[math.random(1, #directions)]
@@ -3241,12 +3241,12 @@ Options.ToggleCake:SetValue(false)
 -- Function to teleport around the target position with random offsets
 local function TeleportAround(targetCFrame)
     local directions = {
-        Vector3.new(-40, 0, 0),  -- left
-        Vector3.new(40, 0, 0),   -- right
-        Vector3.new(0, 0, -40),  -- behind
-        Vector3.new(0, 40, 0),   -- above
-        Vector3.new(0, -40, 0),  -- below
-        Vector3.new(0, 0, 40)    -- in front
+        Vector3.new(-30, 0, 0),  -- left
+        Vector3.new(30, 0, 0),   -- right
+        Vector3.new(0, 0, -30),  -- behind
+        Vector3.new(0, 30, 0),   -- above
+        Vector3.new(0, -30, 0),  -- below
+        Vector3.new(0, 0, 30)    -- in front
     }
     
     local randomDirection = directions[math.random(1, #directions)]
@@ -4226,34 +4226,37 @@ ToggleSeaBeAst:OnChanged(function(Value)
 end)
 Options.ToggleSeaBeAst:SetValue(false)
 
-local function SendKey(key, state)
-    game:GetService('VirtualInputManager'):SendKeyEvent(state, key, false, game)
+local function TeleportCharacterToSea()
+    -- Coordinates for a location in the sea
+    local seaPosition = CFrame.new(-4513.90087890625, 16.76398277282715, -2658.820556640625)
+    local player = game.Players.LocalPlayer
+    local character = player.Character or player.CharacterAdded:Wait()
+
+    -- Teleport character to the sea
+    character.HumanoidRootPart.CFrame = seaPosition
 end
 
-local function HandleSkills()
-    if Skillz then SendKey("Z", true) wait(0.1) SendKey("Z", false) end
-    if Skillx then SendKey("X", true) wait(0.1) SendKey("X", false) end
-    if Skillc then SendKey("C", true) wait(0.1) SendKey("C", false) end
-    if Skillv then SendKey("V", true) wait(0.1) SendKey("V", false) end
-end
+local function TeleportBoatToPlayer()
+    local player = game.Players.LocalPlayer
+    local character = player.Character or player.CharacterAdded:Wait()
+    local seaPosition = CFrame.new(-4513.90087890625, 16.76398277282715, -2658.820556640625)
 
-local function MoveBoat()
-    while true do
-        wait(0.1) -- Short pause to avoid excessive resource use
-        if _G.AutoW then
-            SendKey("W", true) -- Press 'W' to move the boat forward
-            wait(0.1) -- Wait for a short time to ensure smooth movement
-            SendKey("W", false) -- Release 'W'
-            wait(0.1) -- Short pause to ensure the key release is processed
-        else
-            -- If AutoW is disabled, exit the loop
-            wait(1) -- Wait a bit before checking again to reduce CPU usage
-        end
+    -- Check if the boat exists
+    local boat = game:GetService("Workspace").Boats:FindFirstChild("PirateGrandBrigade")
+    if boat then
+        -- Teleport boat to the player
+        boat:SetPrimaryPartCFrame(character.HumanoidRootPart.CFrame)
     end
 end
 
 spawn(function()
-    MoveBoat()
+    while wait(1) do -- Check every second
+        if _G.AutoW then
+            TeleportCharacterToSea()
+            wait(2) -- Give some time for teleporting the character to the sea
+            TeleportBoatToPlayer()
+        end
+    end
 end)
 
 spawn(function()
@@ -4261,7 +4264,10 @@ spawn(function()
         pcall(function()
             if _G.AutoSeaBeast then
                 -- Handling automatic skill usage
-                HandleSkills()
+                if Skillz then SendKey("Z", true) wait(0.1) SendKey("Z", false) end
+                if Skillx then SendKey("X", true) wait(0.1) SendKey("X", false) end
+                if Skillc then SendKey("C", true) wait(0.1) SendKey("C", false) end
+                if Skillv then SendKey("V", true) wait(0.1) SendKey("V", false) end
 
                 -- Sea Beast Logic
                 if not game:GetService("Workspace").SeaBeasts:FindFirstChild("SeaBeast1") then
@@ -4320,6 +4326,7 @@ spawn(function()
         end)
     end
 end)
+
 
 
 
@@ -4866,65 +4873,51 @@ end)
 
 
  
-local ToggleBringMob = Tabs.Setting:AddToggle("ToggleBringMob", {
-    Title = "Enabled Bring Mob",
-    Description = "Fixes mob positioning.",
-    Default = true
-})
-
-ToggleBringMob:OnChanged(function(Value)
-    _G.BringMob = Value
-end)
-
-Options.ToggleBringMob:SetValue(true)
-
--- Function to handle mob positioning and adjustments
-local function HandleMob(v, FarmPos)
-    if v:FindFirstChild("HumanoidRootPart") and v:FindFirstChild("Humanoid") then
-        local distance = (v.HumanoidRootPart.Position - FarmPos.Position).Magnitude
-
-        if v.Name == "Factory Staff" and distance <= 500 then
-            -- Adjust properties for Factory Staff
-            v.Head.CanCollide = false
-            v.HumanoidRootPart.CanCollide = false
-            v.HumanoidRootPart.Size = Vector3.new(60, 60, 60)
-            v.HumanoidRootPart.CFrame = FarmPos
-            if v.Humanoid:FindFirstChild("Animator") then
-                v.Humanoid.Animator:Destroy()
-            end
-            sethiddenproperty(game.Players.LocalPlayer, "SimulationRadius", math.huge)
-
-        elseif v.Name == MonFarm and distance <= 337.5 then
-            -- Adjust properties for MonFarm mobs
-            v.HumanoidRootPart.CFrame = FarmPos
-            v.HumanoidRootPart.Size = Vector3.new(60, 60, 60)
-            v.HumanoidRootPart.Transparency = 1
-            v.Humanoid.JumpPower = 0
-            v.Humanoid.WalkSpeed = 0
-            if v.Humanoid:FindFirstChild("Animator") then
-                v.Humanoid.Animator:Destroy()
-            end
-            v.HumanoidRootPart.CanCollide = false
-            v.Head.CanCollide = false
-            v.Humanoid:ChangeState(Enum.HumanoidStateType.Physics)
-            v.Humanoid:ChangeState(Enum.HumanoidStateType.Seated)
-            sethiddenproperty(game.Players.LocalPlayer, "SimulationRadius", math.huge)
-        end
-    end
-end
-
--- Main loop to continuously check and bring mobs
-spawn(function()
-    while wait(0.5) do  -- Adjusted the wait time for performance
-        pcall(function()
-            if _G.BringMob then
-                for _, v in pairs(game:GetService("Workspace").Enemies:GetChildren()) do
-                    HandleMob(v, FarmPos)
+local ToggleBringMob = Tabs.Setting:AddToggle("ToggleBringMob", {Title = "Enabled Bring Mob",Description = "fix gom quái", Default = true })
+   ToggleBringMob:OnChanged(function(Value)
+        _G.BringMob = Value
+    end)
+    Options.ToggleBringMob:SetValue(true)
+    spawn(function()
+        while wait() do
+            pcall(function()
+                for i,v in pairs(game:GetService("Workspace").Enemies:GetChildren()) do
+                    if _G.BringMob and bringmob then
+                        if v.Name == MonFarm and v:FindFirstChild("Humanoid") and v.Humanoid.Health > 0 then
+                            if v.Name == "Factory Staff" then
+                                if (v.HumanoidRootPart.Position - FarmPos.Position).Magnitude <= 500 then
+                                    v.Head.CanCollide = false
+                                    v.HumanoidRootPart.CanCollide = false
+                                    v.HumanoidRootPart.Size = Vector3.new(60, 60, 60)
+                                    v.HumanoidRootPart.CFrame = FarmPos
+                                    if v.Humanoid:FindFirstChild("Animator") then
+                                        v.Humanoid.Animator:Destroy()
+                                    end
+                                    sethiddenproperty(game.Players.LocalPlayer, "SimulationRadius", math.huge)
+                                end
+                            elseif v.Name == MonFarm then
+                                if (v.HumanoidRootPart.Position - FarmPos.Position).Magnitude <= 337.5 then
+                                    v.HumanoidRootPart.CFrame = FarmPos
+                                    v.HumanoidRootPart.Size = Vector3.new(60,60,60)
+                                    v.HumanoidRootPart.Transparency = 1
+                                    v.Humanoid.JumpPower = 0
+                                    v.Humanoid.WalkSpeed = 0
+                                    if v.Humanoid:FindFirstChild("Animator") then
+                                        v.Humanoid.Animator:Destroy()
+                                    end
+                                    v.HumanoidRootPart.CanCollide = false
+                                    v.Head.CanCollide = false
+                                    v.Humanoid:ChangeState(11)
+                                    v.Humanoid:ChangeState(14)
+                                    sethiddenproperty(game.Players.LocalPlayer, "SimulationRadius", math.huge)
+                                end
+                            end
+                        end
+                                end
+                            end
+                        end)
                 end
-            end
-        end)
-    end
-end)
+            end)
 
 
          
